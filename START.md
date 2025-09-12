@@ -80,14 +80,16 @@ It is the **single source of truth** until `/spec/` is created.
   - Large PR → up to 3 lists (≤5 bullets each).  
   - No empty PRs, no fluff.  
 
-- **README.md (always updated):**  
-  - At the very top: short description, site/demo link, current stage.  
-  - Progress bars (manual updates).  
-  - **Local Development** section: how to run locally + docker-compose.  
-  - **Testing** section: how to test locally + CI commands.  
-  - Sections: **What changed**, **Roadmap**, **TODO**.  
-  - Daily updates: features, tasks, improvements.  
-  - Weekly updates: roadmap + progress bars.  
+- **README.md (main tracking file):**  
+  - **Header:** Project name, status emoji, progress bar, timeline, focus  
+  - **Current Status:** What's working now, what's in progress  
+  - **Progress Tracking:** Daily updates with ▓▓▓░░░░░░░ bars for each feature  
+  - **Scope of Work:** Major milestones, blockers, research questions  
+  - **Local Development:** How to run locally + docker-compose  
+  - **Testing:** How to test locally + CI commands  
+  - **Link to /spec/:** If exists, always reference specification folder  
+  - **Daily updates:** Features completed, current blockers, next steps  
+  - **GitSpecOps approach:** Repo state = project truth  
 
 - **Tests & CI:**  
   - Local: lint + build + smoke must pass before PR.  
@@ -105,8 +107,9 @@ It is the **single source of truth** until `/spec/` is created.
 ## AI Agent Role
 - **Human supervision:** AI works under human control/review  
 - **Full autonomy** within stage rules and assigned tasks  
-- **Always update README:** Status, progress, changes after each increment  
+- **README is king:** Update progress bars, status, blockers after each increment  
 - **Test everything:** API endpoints, functionality, edge cases  
+- **Visible progress:** Owner must see current state through README at all times  
 - Iterations must be small, frequent, and visible  
 - Always prefer working product over big refactors  
 
@@ -155,8 +158,10 @@ feat: short imperative subject
 - `/spec/requirements.md` – features, user flows  
 - `/spec/roadmap.md` – development phases, progress bars  
 - `/spec/kpi.yaml` – manual progress % for bars  
+- `/spec/README_TEMPLATE.md` – structure for main README tracking  
 - `README.md` – project overview + "Read everything in `/spec/` first"  
 
+**README monitoring requirements migrate to `/spec/GUIDE.md`**  
 **For existing projects:** All guidelines must already be in `/spec/` folder.  
 
 ---
