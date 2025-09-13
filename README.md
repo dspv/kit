@@ -57,6 +57,7 @@ touch .env.example docker-compose.yml Makefile
 - **`product.md`** - Business case, target users, value proposition
 - **`requirements.md`** - Technical requirements, user stories, architecture  
 - **`roadmap.md`** - Development phases, timeline, deliverables
+- **`backlog.md`** - Detailed tasks for AI agents with priorities and dependencies
 - **`kpi.md`** - Progress tracking with visual bars (`▓▓▓░░░░░░░ 30%`)
 - **`guide.md`** - Development guidelines (from START.md)
 
@@ -77,6 +78,7 @@ project/
 │   ├── product.md     # Business specification
 │   ├── requirements.md # Technical requirements
 │   ├── roadmap.md     # Development phases
+│   ├── backlog.md     # Detailed tasks for AI agents
 │   └── kpi.md         # Progress tracking
 ├── apps/              # Service implementations
 ├── libs/              # Shared code
