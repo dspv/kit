@@ -153,15 +153,16 @@ feat: short imperative subject
 ---
 
 ## Migration to `/spec`
-**After first commit, move START.md → `/spec/GUIDE.md` and create:**  
+**After first commit, move START.md → `/spec/guide.md` and create:**  
 - `/spec/product.md` – problem, solution, ICP, scope  
 - `/spec/requirements.md` – features, user flows  
 - `/spec/roadmap.md` – development phases, progress bars  
-- `/spec/kpi.yaml` – manual progress % for bars  
-- `/spec/README_TEMPLATE.md` – structure for main README tracking  
+- `/spec/kpi.md` – manual progress % for bars (Markdown format)  
+- `/spec/readme_template.md` – structure for main README tracking  
 - `README.md` – project overview + "Read everything in `/spec/` first"  
 
-**README monitoring requirements migrate to `/spec/GUIDE.md`**  
+**All templates available in kit root** - copy entire kit to new project  
+**README monitoring requirements migrate to `/spec/guide.md`**  
 **For existing projects:** All guidelines must already be in `/spec/` folder.  
 
 ---
