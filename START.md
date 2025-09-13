@@ -157,8 +157,8 @@ feat: short imperative subject
 - `/spec/product.md` – problem, solution, ICP, scope  
 - `/spec/requirements.md` – features, user flows  
 - `/spec/roadmap.md` – development phases, progress bars  
+- `/spec/backlog.md` – detailed tasks for AI agents with priorities
 - `/spec/kpi.md` – manual progress % for bars (Markdown format)  
-- `/spec/readme_template.md` – structure for main README tracking  
 - `README.md` – project overview + "Read everything in `/spec/` first"  
 
 **All templates available in kit root** - copy entire kit to new project  
