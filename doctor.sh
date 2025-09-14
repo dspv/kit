@@ -90,14 +90,14 @@ check_file_sizes() {
     
     local large_files=()
     
-    find spec/ -name "*.md" -type f | while read -r file; do
+    while IFS= read -r -d '' file; do
         local line_count=$(wc -l < "$file")
         if [[ $line_count -gt 2000 ]]; then
             log_warning "$file contains $line_count lines (>2000)"
             echo "  💡 Consider creating ${file%.md}.v2.md"
             large_files+=("$file")
         fi
-    done
+    done < <(find spec/ -name "*.md" -type f -print0)
     
     if [[ ${#large_files[@]} -eq 0 ]]; then
         log_success "All files have acceptable size"
@@ -110,7 +110,7 @@ check_refs_contract() {
     
     local files_without_refs=()
     
-    find spec/ -name "*.md" -type f | while read -r file; do
+    while IFS= read -r -d '' file; do
         # Check for refs in multiple languages/formats
         if grep -q -E "(Refs:|Ссылки:|References:|Links:)" "$file"; then
             log_success "$file contains refs contract"
@@ -118,7 +118,7 @@ check_refs_contract() {
             log_warning "$file missing refs contract (non-blocking)"
             files_without_refs+=("$file")
         fi
-    done
+    done < <(find spec/ -name "*.md" -type f -print0)
     
     # Note: This is non-blocking to support different languages
     if [[ ${#files_without_refs[@]} -gt 0 ]]; then
@@ -134,23 +134,23 @@ check_code_language() {
     local code_extensions=("*.js" "*.ts" "*.jsx" "*.tsx" "*.go" "*.py" "*.java" "*.cpp" "*.c" "*.h" "*.cs" "*.php" "*.rb" "*.rs" "*.swift" "*.kt")
     
     for ext in "${code_extensions[@]}"; do
-        find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" 2>/dev/null | while read -r file; do
+        while IFS= read -r -d '' file; do
             # Check for Cyrillic, Chinese, Japanese, Arabic, etc.
             if grep -q -P '[\p{Cyrillic}\p{Han}\p{Hiragana}\p{Katakana}\p{Arabic}\p{Hebrew}]' "$file" 2>/dev/null; then
                 non_english_files+=("$file")
                 log_warning "$file contains non-English text (non-blocking)"
             fi
-        done
+        done < <(find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" -print0 2>/dev/null)
     done
     
     # Also check comments in code files
     for ext in "${code_extensions[@]}"; do
-        find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" 2>/dev/null | while read -r file; do
+        while IFS= read -r -d '' file; do
             # Check for Russian comments (common pattern)
             if grep -q -E '//.*[а-яё]|/\*.*[а-яё].*\*/|#.*[а-яё]' "$file" 2>/dev/null; then
                 log_warning "$file has non-English comments (non-blocking)"
             fi
-        done
+        done < <(find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" -print0 2>/dev/null)
     done
     
     if [[ ${#non_english_files[@]} -eq 0 ]]; then
@@ -307,12 +307,12 @@ $(if [[ -f "spec/roadmap.md" ]] && ! grep -q "Stage:" spec/roadmap.md; then
     echo "- Add stage information to roadmap.md"
 fi)
 
-$(find spec/ -name "*.md" -type f | while read -r file; do
+$(while IFS= read -r -d '' file; do
     local line_count=$(wc -l < "$file")
     if [[ $line_count -gt 2000 ]]; then
         echo "- Consider splitting $file ($line_count lines)"
     fi
-done)
+done < <(find spec/ -name "*.md" -type f -print0))
 
 ## Next Steps
 
