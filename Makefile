@@ -24,7 +24,6 @@ setup: ## Initialize project structure and dependencies
 		echo "  # Add your services here" >> docker-compose.yml; \
 	fi
 	@if [ -d .git ]; then \
-		git config commit.template .gitmessage 2>/dev/null || true; \
 		echo "✅ Git configured"; \
 	fi
 	@./doctor.sh
@@ -132,7 +131,6 @@ db-reset: ## Reset database (development only)
 # Git helpers
 git-setup: ## Configure git for this project
 	@if [ -d .git ]; then \
-		git config commit.template .gitmessage 2>/dev/null || true; \
 		echo "✅ Git configured for project"; \
 	else \
 		echo "⚠️  Not a git repository"; \
