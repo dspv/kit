@@ -33,137 +33,138 @@ Frontend (React/TS) ←→ API (Go) ←→ DB (PostgreSQL)
 - [ ] [Task 3] - [priority]
 - [ ] [Task 4] - [priority]
 
-## 🔧 Быстрый старт
+## 🔧 Quick Start
 
 ```bash
-# Клонирование
+# Clone
 git clone [repo-url]
 cd [project-name]
 
-# Разработка
+# Development
 make dev
-# или
+# or
 docker compose up --build
 
-# Тесты
+# Tests
 make test
 make lint
 ```
 
-## 📝 Правила кодинга
+## 📝 Coding Rules
 
-### Коммиты
+### Commits
 ```
-feat: краткое описание
+feat: brief description
 
-- что сделано
-- какие тесты добавлены
-- какие риски
+- what was done
+- what tests added
+- what risks
+
+Refs: spec/arch.md#Components; spec/policy.md#Rules
 ```
 
 ### PR Requirements
-- ✅ Lint прошёл
-- ✅ Тесты прошли  
-- ✅ README обновлён
-- ✅ Refs добавлены: `spec/arch.md#Components; spec/policy.md#Rules`
+- ✅ Lint passed
+- ✅ Tests passed  
+- ✅ README updated
+- ✅ Refs added: `spec/arch.md#Components; spec/policy.md#Rules`
 
-### Code Style
-- **Go**: Standard lib, explicit errors, structured logs
-- **TypeScript**: Strict mode, functional components
-- **API**: RESTful, `/api/v1/` prefix
-- **DB**: Migrations в `/apps/api/migrations/`
+### Database
+- **Migrations**: Use `/apps/api/migrations/`
+- **DB**: Migrations in `/apps/api/migrations/`
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-### Локально
+### Local
 ```bash
-# Backend
-cd apps/api
-go test ./...
+# Unit tests
+make test-unit
 
-# Frontend
-cd apps/ui
-npm test
-
-# Integration
+# Integration tests  
 make test-integration
+
+# E2E tests
+make test-e2e
+
+# All tests
+make test
 ```
 
-### CI Pipeline
-1. Lint → Build → Unit Tests → Integration Tests → Deploy
+### CI/CD
+```bash
+# Lint check
+make lint
 
-## 🔐 Безопасность
+# Security scan
+make security-scan
 
-### Критично
-- ❌ Никогда не коммитить секреты
-- ✅ Валидировать все входные данные
-- ✅ JWT для авторизации
-- ✅ HTTPS только
-- ✅ Rate limiting
+# Build check
+make build
+```
 
-### Логирование
+## 🔐 Security
+
+### Critical
+- ❌ Never commit secrets
+- ✅ Validate all input data
+- ✅ JWT for authorization
+- ✅ HTTPS only
+
+### Logging
 ```go
-log.Info("action completed", 
-    "user_id", userID,
-    "action", "create_resource",
-    // НЕ логировать PII!
-)
+// ✅ Correct
+log.Info("User action", "user_id", userID, "action", "login")
+
+// ❌ Wrong - Don't log PII!
+log.Info("User login", "email", user.Email)
 ```
 
-## 📊 Производительность
+## 📊 Performance
 
-### Targets
-- Response time: <200ms
-- Throughput: 1000 RPS
-- Uptime: 99.9%
+### Monitoring
+- Response time < 200ms
+- Memory usage < 512MB
+- CPU usage < 70%
 
-### Оптимизация
-- Redis кэширование
-- DB индексы на частые запросы
+### Optimization
+- Redis caching
+- DB indexes on frequent queries
 - Connection pooling
 
-## 🚨 Частые проблемы
+## 🚨 Common Issues
 
 ### Database
 ```go
-// ✅ Правильно
+// ✅ Correct
 tx := db.Begin()
 defer tx.Rollback()
-// ... operations ...
+// ... operations
 tx.Commit()
 
-// ❌ Неправильно
-db.Create(&model) // без транзакции
+// ❌ Wrong
+db.Create(&model) // without transaction
 ```
 
-### API Errors
+### API
 ```go
-// ✅ Правильно
-if err != nil {
-    return c.Status(400).JSON(ErrorResponse{
-        Success: false,
-        Error: ErrorDetail{
-            Code: "VALIDATION_FAILED",
-            Message: "Invalid input data",
-        },
-    })
+// ✅ Correct
+if err := validate.Struct(req); err != nil {
+    return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 }
 ```
 
-## 🔗 Быстрые ссылки
+## 🔗 Quick Links
 
-- **Полная архитектура**: spec/arch.md
-- **API документация**: spec/api.md
-- **Правила**: spec/policy.md
-- **Roadmap**: spec/roadmap.md
+- **Full Architecture**: spec/arch.md
+- **API Documentation**: spec/api.md
+- **Project Rules**: spec/policy.md
 
-## 📞 Контакты
+## 📞 Contacts
 
-- **Tech Lead**: [контакт]
-- **DevOps**: [контакт]
-- **QA**: [контакт]
+- **Tech Lead**: [contact]
+- **DevOps**: [contact]
+- **QA**: [contact]
 
 ---
 
-**Источники**: spec/arch.md, spec/api.md, spec/policy.md  
-**Refs**: spec/arch.md#Development; spec/policy.md#Coding
+**Sources**: spec/arch.md, spec/api.md, spec/policy.md

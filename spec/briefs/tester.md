@@ -6,239 +6,178 @@
 
 **Project**: [Project Name]  
 **Stage**: [incubate/beta/release]  
-**Тест-стратегия**: Unit → Integration → E2E  
-**Текущий фокус**: [Текущая область тестирования]
+**Test Strategy**: Unit → Integration → E2E  
+**Current Focus**: [Current Testing Area]
 
-## 📋 Что тестируем
+## 📋 What We Test
 
-### Критичные функции
-1. **Авторизация** - login/logout/register
-2. **[Main Feature 1]** - [описание]
-3. **[Main Feature 2]** - [описание]
-4. **API endpoints** - все CRUD операции
+### Critical Functions
+1. **Authentication** - login/logout/register
+2. **[Main Feature 1]** - [description]
+3. **[Main Feature 2]** - [description]
+4. **API endpoints** - all CRUD operations
 
-### Текущие задачи
-- [ ] [Тест-задача 1] - [статус]
-- [ ] [Тест-задача 2] - [статус]
-- [ ] [Тест-задача 3] - [статус]
+### Current Tasks
+- [ ] [Test Task 1] - [status]
+- [ ] [Test Task 2] - [status]
+- [ ] [Test Task 3] - [status]
 
-## 🎯 Тест-пирамида
+## 🎯 Test Pyramid
 
 ```
-      E2E (Few)
-    ─────────────
-   Integration (Some)
-  ─────────────────────
- Unit Tests (Many)
+        E2E Tests (5%)
+    ┌─────────────────────┐
+    │ Critical User Flows │
+    └─────────────────────┘
+         
+    Integration Tests (25%)
+  ┌─────────────────────────┐
+  │   API + DB + External   │
+  └─────────────────────────┘
+  
+      Unit Tests (70%)
+┌─────────────────────────────┐
+│ Components, Functions, Utils │
+└─────────────────────────────┘
 ```
 
-### Unit Tests (80%)
-- **Backend**: Бизнес-логика, утилиты
-- **Frontend**: Компоненты, хуки, утилиты
-- **Target**: >80% покрытие
+### Unit Tests (70%)
+- **Backend**: Business logic, utilities
+- **Frontend**: Components, hooks, utilities
+- **Target**: >80% coverage
 
-### Integration Tests (15%)
-- **API endpoints**: Все CRUD операции
-- **Database**: Queries, migrations
-- **External APIs**: Mocked интеграции
+### Integration Tests (25%)
+- **API endpoints**: All CRUD operations
+- **Database**: Data integrity
+- **External APIs**: Mocked integrations
 
 ### E2E Tests (5%)
-- **Critical paths**: Регистрация → Login → Основной flow
-- **Browser testing**: Chrome, Firefox, Safari
-- **Mobile**: Responsive design
+- **Critical paths**: Registration → Login → Main flow
+- **User journeys**: End-to-end scenarios
+- **Cross-browser**: Chrome, Firefox, Safari
 
-## 🔧 Инструменты
+## 🔧 Tools
 
-### Backend Testing
+### Testing Frameworks
 ```bash
-# Unit tests
-cd apps/api
-go test ./... -v -cover
+# Backend (Go)
+go test ./...
+go test -race ./...
 
-# Integration tests
-go test ./tests/integration/... -v
-
-# Test coverage
-go test -coverprofile=coverage.out ./...
-go tool cover -html=coverage.out
-```
-
-### Frontend Testing
-```bash
-# Unit tests
-cd apps/ui
+# Frontend (React)
 npm test
-
-# E2E tests
 npm run test:e2e
 
-# Coverage
-npm run test:coverage
-```
-
-### API Testing
-```bash
-# Postman collection
+# API Testing
 newman run postman_collection.json
-
-# Manual testing
-curl -X POST http://localhost:8080/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password"}'
 ```
 
-## 📊 Test Cases
-
-### Authentication Flow
-```
-1. Register new user
-   ✅ Valid data → Success
-   ❌ Invalid email → Error
-   ❌ Weak password → Error
-   ❌ Duplicate email → Error
-
-2. Login
-   ✅ Valid credentials → JWT token
-   ❌ Wrong password → Error
-   ❌ Non-existent user → Error
-
-3. Protected endpoints
-   ✅ Valid token → Access granted
-   ❌ No token → 401 Unauthorized
-   ❌ Expired token → 401 Unauthorized
-```
-
-### [Main Feature] Testing
-```
-1. Create [Resource]
-   ✅ Valid data → Created
-   ❌ Missing required fields → Validation error
-   ❌ Invalid format → Format error
-
-2. Read [Resource]
-   ✅ Existing resource → Data returned
-   ❌ Non-existent → 404 Not Found
-   ❌ No permission → 403 Forbidden
-
-3. Update [Resource]
-   ✅ Valid changes → Updated
-   ❌ Invalid data → Validation error
-   ❌ Not owner → 403 Forbidden
-
-4. Delete [Resource]
-   ✅ Own resource → Deleted
-   ❌ Not owner → 403 Forbidden
-   ❌ Non-existent → 404 Not Found
-```
-
-## 🚨 Критичные сценарии
-
-### Security Testing
-- [ ] SQL Injection attempts
-- [ ] XSS protection
-- [ ] CSRF protection
-- [ ] Rate limiting
-- [ ] Input validation
-- [ ] Authentication bypass
-
-### Performance Testing
-- [ ] Load testing (1000 concurrent users)
-- [ ] Stress testing (до отказа)
-- [ ] Response time (<200ms)
-- [ ] Memory leaks
-- [ ] Database performance
-
-### Edge Cases
-- [ ] Empty/null inputs
-- [ ] Very long strings
-- [ ] Special characters
-- [ ] Concurrent operations
-- [ ] Network failures
-- [ ] Database unavailable
-
-## 📈 Метрики качества
-
-### Coverage Targets
-| Component | Target | Current |
-|-----------|--------|---------|
-| Backend Unit | >80% | TBD |
-| Frontend Unit | >70% | TBD |
-| Integration | >60% | TBD |
-| E2E Critical | 100% | TBD |
-
-### Bug Tracking
-| Severity | Count | Status |
-|----------|-------|--------|
-| Critical | 0 | ✅ |
-| High | TBD | 🔄 |
-| Medium | TBD | 🔄 |
-| Low | TBD | 📋 |
-
-## 🔄 Test Automation
-
-### CI Pipeline
-```yaml
-1. Lint → Code quality
-2. Unit Tests → Fast feedback
-3. Build → Integration ready
-4. Integration Tests → API testing
-5. E2E Tests → User scenarios
-6. Deploy → Staging/Production
-```
-
-### Test Data Management
+### Test Data
 ```bash
-# Test database setup
-make test-db-setup
-
 # Seed test data
-make test-data-seed
+make seed-test-data
 
-# Cleanup
-make test-db-cleanup
+# Clean test DB
+make clean-test-db
+
+# Reset to fixtures
+make reset-fixtures
 ```
 
-## 🐛 Bug Reporting
+## 🎯 Test Categories
 
-### Bug Report Template
-```markdown
-## Bug Description
-[Краткое описание]
+### Functional Testing
+- ✅ User registration/login
+- ✅ CRUD operations
+- ✅ Business logic validation
+- ✅ Error handling
 
-## Steps to Reproduce
-1. [Шаг 1]
-2. [Шаг 2]
-3. [Шаг 3]
+### Non-Functional Testing
+- ✅ Performance (load testing)
+- ✅ Security (auth, input validation)
+- ✅ Usability (UI/UX)
+- ✅ Compatibility (browsers, devices)
 
-## Expected Result
-[Что должно было произойти]
+### Regression Testing
+- ✅ Automated test suite
+- ✅ Smoke tests
+- ✅ Critical path validation
 
-## Actual Result
-[Что произошло на самом деле]
+## 🚨 Critical Scenarios
 
-## Environment
-- Browser: [версия]
-- OS: [система]
-- API Version: [версия]
+### Must Test Before Release
+- [ ] User can register and login
+- [ ] All API endpoints work
+- [ ] Data persistence works
+- [ ] Error messages are clear
+- [ ] Security validations work
 
-## Refs
-spec/api.md#Endpoint; spec/arch.md#Component
-```
+### Performance Tests
+- [ ] API response time < 200ms
+- [ ] Page load time < 3s
+- [ ] Concurrent users (100+)
+- [ ] Stress testing (until failure)
 
-## 🔗 Полезные ссылки
+### Security Tests
+- [ ] SQL injection prevention
+- [ ] XSS protection
+- [ ] Authentication bypass attempts
+- [ ] Input validation
+- [ ] File upload security
 
-- **API документация**: spec/api.md
-- **Архитектура**: spec/arch.md
-- **Test environment**: [URL]
-- **Bug tracker**: [URL]
+## 📈 Quality Metrics
 
-## 📞 Контакты
+### Test Coverage
+- **Unit Tests**: >80%
+- **Integration**: >70%
+- **E2E**: Critical paths only
 
-- **QA Lead**: [контакт]
-- **Developers**: [контакт]
-- **DevOps**: [контакт]
+### Defect Metrics
+- **Critical**: 0 open
+- **High**: <3 open
+- **Medium**: <10 open
+
+### Performance
+- **API**: <200ms average
+- **Frontend**: <3s load time
+- **Uptime**: >99.9%
+
+## 🐛 Bug Report Template
+
+### Title
+[Brief Description]
+
+### Steps to Reproduce
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+### Expected Result
+[What should have happened]
+
+### Actual Result
+[What actually happened]
+
+### Environment
+- Browser: [version]
+- OS: [system]
+- API Version: [version]
+
+### Priority
+- 🔴 Critical / 🟡 High / 🟢 Medium / 🔵 Low
+
+## 🔗 Useful Links
+
+- **API Documentation**: spec/api.md
+- **Architecture**: spec/arch.md
+- **Test Cases**: [Test Management Tool]
+
+## 📞 Contacts
+
+- **QA Lead**: [contact]
+- **Developers**: [contact]
+- **DevOps**: [contact]
 
 ---
 
-**Источники**: spec/api.md, spec/arch.md, spec/policy.md  
-**Refs**: spec/arch.md#Testing; spec/policy.md#Quality
+**Sources**: spec/api.md, spec/arch.md, spec/policy.md

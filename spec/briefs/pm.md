@@ -6,171 +6,161 @@
 
 **Project**: [Project Name]  
 **Stage**: [incubate/beta/release]  
-**Progress**: ░░░░░░░░░░ 0%  
-**Timeline**: Week 0/[X] до MVP  
-**Status**: 🔴 Pre-Beta
+**Progress**: [X]% Complete  
+**Timeline**: Week 0/[X] to MVP  
+**Budget**: On track / Over / Under
 
-## 🎯 Ключевые метрики
+## 🎯 Key Metrics
 
-### Прогресс разработки
-| Milestone | Target Date | Status | Progress |
-|-----------|-------------|--------|----------|
-| [Milestone 1] | [Date] | Not Started | ░░░░░░░░░░ 0% |
-| [Milestone 2] | [Date] | Not Started | ░░░░░░░░░░ 0% |
-| MVP | [Date] | Not Started | ░░░░░░░░░░ 0% |
+### Development Progress
+- **Completed**: [X]% ([Y] of [Z] features)
+- **In Progress**: [X] features
+- **Blocked**: [X] issues
+- **Next Sprint**: [X] features planned
 
-### Команда
-| Роль | Ресурс | Загрузка | Статус |
-|------|--------|----------|--------|
-| Tech Lead | [Имя] | 100% | ✅ Active |
-| Backend Dev | [Имя] | 100% | ✅ Active |
-| Frontend Dev | [Имя] | 100% | ✅ Active |
-| QA | [Имя] | 50% | 🔄 Part-time |
+### Team
+| Role | Resource | Load | Status |
+|------|----------|------|--------|
+| Tech Lead | [Name] | 100% | ✅ Active |
+| Backend Dev | [Name] | 100% | ✅ Active |
+| Frontend Dev | [Name] | 100% | ✅ Active |
+| QA | [Name] | 50% | 🔄 Part-time |
 
-## 📈 Бизнес-метрики
+## 📈 Business Metrics
 
-### Цели проекта
-- **Проблема**: [Краткое описание проблемы]
-- **Решение**: [Краткое описание решения]
-- **Ценность**: [Ключевая ценность для пользователей]
+### Project Goals
+- **Problem**: [Brief problem description]
+- **Solution**: [Brief solution description]
+- **Value**: [Key value for users]
 
-### Success Metrics
-| KPI | Target | Current | Status |
-|-----|--------|---------|--------|
-| [Metric 1] | [Target] | 0 | Not Started |
-| [Metric 2] | [Target] | 0 | Not Started |
-| [Metric 3] | [Target] | 0% | Not Measured |
+### Success Criteria
+- **User Adoption**: [Target] active users
+- **Performance**: [Target] response time
+- **Quality**: [Target] bug rate
+- **Revenue**: [Target] impact
 
-### Бюджет
-| Статья | Запланировано | Потрачено | Остаток |
-|--------|---------------|-----------|---------|
-| Разработка | [X]h ([Y] недель × [Z]h) | 0h | [X]h |
-| API costs | $[X] USD | $0 | $[X] |
-| Инфраструктура | $[X] USD | $0 | $[X] |
+### Budget
+| Item | Planned | Spent | Remaining |
+|------|---------|-------|-----------|
+| Development | [X]h ([Y] weeks × [Z]h) | 0h | [X]h |
+| Infrastructure | $[X] USD | $0 | $[X] |
+| External APIs | $[X] USD | $0 | $[X] |
 
-## 🗓️ Roadmap
+## 🚀 Current Sprint
 
-### Phase 1: [Phase Name] (Week X-Y)
-**Цель**: [Описание цели фазы]
+**Goal**: [Sprint goal description]
 
-#### Week X
-- [ ] **[Epic Name]** ([X] дней)
-  - [Task 1] - [ответственный]
-  - [Task 2] - [ответственный]
-- **Deliverable**: [Что будет готово]
+### In Progress
+- [ ] **[Epic Name]** ([X] days)
+  - [Task 1] - [assignee]
+  - [Task 2] - [assignee]
+- **Deliverable**: [What will be ready]
 
-#### Week Y  
-- [ ] **[Epic Name]** ([X] дней)
-  - [Task 1] - [ответственный]
-- **Deliverable**: [Что будет готово]
+### Next Sprint
+- [ ] **[Epic Name]** ([X] days)
+  - [Task 1] - [assignee]
+- **Deliverable**: [What will be ready]
 
-### Phase 2: [Phase Name] (Week X-Y)
-**Цель**: [Описание цели фазы]
+### Future Sprints
+**Goal**: [Phase goal description]
 
-## 🚨 Риски и блокеры
+## 🚨 Risks and Blockers
 
-### Текущие блокеры
-- 🔴 **[Blocker 1]**: [Описание] - [Ответственный] - [Deadline]
-- 🟡 **[Blocker 2]**: [Описание] - [Ответственный] - [Deadline]
+### Current Blockers
+- 🔴 **[Blocker 1]**: [Description] - [Owner] - [Deadline]
+- 🟡 **[Blocker 2]**: [Description] - [Owner] - [Deadline]
 
-### Технические риски
-| Риск | Вероятность | Влияние | Митигация |
-|------|-------------|---------|-----------|
-| [Risk 1] | High | High | [Стратегия] |
-| [Risk 2] | Medium | High | [Стратегия] |
+### Technical Risks
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|---------|------------|
+| [Risk 1] | High | High | [Strategy] |
+| [Risk 2] | Medium | High | [Strategy] |
 
-### Бизнес-риски
-| Риск | Вероятность | Влияние | Митигация |
-|------|-------------|---------|-----------|
-| [Risk 1] | Medium | High | [Стратегия] |
-| [Risk 2] | Low | Medium | [Стратегия] |
+### Business Risks
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|---------|------------|
+| [Risk 1] | Medium | High | [Strategy] |
+| [Risk 2] | Low | Medium | [Strategy] |
 
-## 📋 Текущий статус
+## 📋 Current Status
 
-### Что работает
-- [Функция 1] - ✅ Готово
-- [Функция 2] - ✅ Готово
+### What Works
+- [Feature 1] - ✅ Ready
+- [Feature 2] - ✅ Ready
 
-### В разработке
-- [Задача 1] - 🔄 In Progress - [Dev Name] - [ETA]
-- [Задача 2] - 🔄 In Progress - [Dev Name] - [ETA]
+### In Development
+- [Task 1] - 🔄 In Progress - [Dev Name] - [ETA]
+- [Task 2] - 🔄 In Progress - [Dev Name] - [ETA]
 
-### Планируется
-- [Задача 3] - 📋 Planned - [Week]
-- [Задача 4] - 📋 Planned - [Week]
+### Planned
+- [Task 3] - 📋 Planned - [Week]
+- [Task 4] - 📋 Planned - [Week]
 
-## 🎯 Качество
+## 🎯 Quality
 
-### Code Quality
-| Метрика | Target | Current | Status |
-|---------|--------|---------|--------|
-| Test Coverage | >80% | TBD | Not Measured |
-| Code Review | 100% | TBD | Not Measured |
-| Bug Count | <5 | TBD | Not Measured |
+### Technical Quality
+| Metric | Target | Current | Status |
+|--------|--------|---------|--------|
+| Test Coverage | >80% | [X]% | ✅/⚠️/❌ |
+| Bug Count | <5 | [X] | ✅/⚠️/❌ |
+| Performance | <200ms | [X]ms | ✅/⚠️/❌ |
 
-### Performance
-| Метрика | Target | Current | Status |
-|---------|--------|---------|--------|
-| Response Time | <200ms | TBD | Not Measured |
-| Uptime | 99.9% | TBD | Not Measured |
-| Load Capacity | 1000 RPS | TBD | Not Measured |
+### User Experience
+| Metric | Target | Current | Status |
+|--------|--------|---------|--------|
+| Load Time | <3s | [X]s | ✅/⚠️/❌ |
+| Error Rate | <1% | [X]% | ✅/⚠️/❌ |
+| User Satisfaction | >4.5/5 | [X]/5 | ✅/⚠️/❌ |
 
 ## 👥 Stakeholders
 
-### Internal Team
-- **Product Owner**: [Имя] - [Контакт]
-- **Tech Lead**: [Имя] - [Контакт]
-- **QA Lead**: [Имя] - [Контакт]
+### Core Team
+- **Product Owner**: [Name] - [Contact]
+- **Tech Lead**: [Name] - [Contact]
+- **QA Lead**: [Name] - [Contact]
 
-### External Stakeholders
-- **Business Sponsor**: [Имя] - [Контакт]
-- **End Users**: [Группа] - [Представитель]
+### Business
+- **Business Sponsor**: [Name] - [Contact]
+- **End Users**: [Group] - [Representative]
 
-## 📊 Reporting
+## 📅 Meetings & Ceremonies
 
-### Weekly Status
-**Формат**: Каждый понедельник
-- Progress update (% completion)
-- Completed tasks
-- Blockers and risks
-- Next week plan
+### Weekly Standup
+**Format**: Every Monday
+- Progress updates
+- Blockers discussion
+- Sprint planning
 
 ### Monthly Review
-**Формат**: Последняя пятница месяца
-- Milestone progress
-- Budget status
-- Team performance
-- Stakeholder feedback
+**Format**: Last Friday of month
+- Demo to stakeholders
+- Metrics review
+- Next month planning
 
 ## 🔄 Process
 
-### Stage Rules
-- **incubate**: Быстрые итерации, прямые пуши
-- **beta**: PR-only, 1 approval, превью-деплой
-- **release**: 2 approvals, полное тестирование
+### Development Stage Rules
+- **incubate**: Fast iterations, direct pushes
+- **beta**: PR-only, 1 approval, preview deploy
+- **release**: 2 approvals, full testing
+
+### Sprint Cadence
+- **Sprint planning**: Monday
+- **Retrospective**: Friday
+- **Demo**: Every 2 weeks
 
 ### Communication
-- **Daily standups**: 10:00 AM
-- **Sprint planning**: Понедельник
-- **Retrospective**: Пятница
-- **Demo**: Каждые 2 недели
+- **Daily**: Slack updates
+- **Weekly**: Status email
+- **Monthly**: Stakeholder presentation
 
-## 📞 Escalation
+## 🔗 Key Documents
 
-### Issues Resolution
-1. **Technical**: Tech Lead → CTO
-2. **Resource**: PM → Department Head
-3. **Business**: Product Owner → Business Sponsor
-4. **Critical**: Immediate escalation to all levels
-
-## 🔗 Ключевые документы
-
-- **Product Spec**: spec/product.md
-- **Technical Spec**: spec/arch.md
-- **API Docs**: spec/api.md
-- **Detailed Roadmap**: spec/roadmap.md
+- **Product Requirements**: spec/product.md
+- **Technical Architecture**: spec/arch.md
+- **Development Roadmap**: spec/roadmap.md
+- **API Documentation**: spec/api.md
 
 ---
 
-**Источники**: spec/product.md, spec/roadmap.md, spec/kpi.md  
-**Refs**: spec/roadmap.md#Progress; spec/product.md#Metrics
+**Sources**: spec/product.md, spec/roadmap.md, spec/kpi.md
