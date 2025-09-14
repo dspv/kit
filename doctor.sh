@@ -205,19 +205,19 @@ generate_briefs() {
     
     # Update date in existing briefs
     if [[ -f "spec/briefs/coder.md" ]]; then
-        sed -i.bak "s/Обновлено: \[дата\]/Updated: $current_date/g" spec/briefs/coder.md
+        sed -i.bak "s/Updated: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]/Updated: $current_date/g" spec/briefs/coder.md
         rm spec/briefs/coder.md.bak 2>/dev/null || true
         log_success "Updated spec/briefs/coder.md"
     fi
     
     if [[ -f "spec/briefs/tester.md" ]]; then
-        sed -i.bak "s/Обновлено: \[дата\]/Updated: $current_date/g" spec/briefs/tester.md
+        sed -i.bak "s/Updated: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]/Updated: $current_date/g" spec/briefs/tester.md
         rm spec/briefs/tester.md.bak 2>/dev/null || true
         log_success "Updated spec/briefs/tester.md"
     fi
     
     if [[ -f "spec/briefs/pm.md" ]]; then
-        sed -i.bak "s/Обновлено: \[дата\]/Updated: $current_date/g" spec/briefs/pm.md
+        sed -i.bak "s/Updated: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]/Updated: $current_date/g" spec/briefs/pm.md
         rm spec/briefs/pm.md.bak 2>/dev/null || true
         log_success "Updated spec/briefs/pm.md"
     fi
