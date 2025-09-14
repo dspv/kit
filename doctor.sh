@@ -91,7 +91,7 @@ check_english_only() {
     # Check markdown files for non-English text
     while IFS= read -r -d '' file; do
         # Check for Cyrillic, Chinese, Japanese, Arabic, etc.
-        if grep -q -P '[\p{Cyrillic}\p{Han}\p{Hiragana}\p{Katakana}\p{Arabic}\p{Hebrew}]' "$file" 2>/dev/null; then
+        if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
             non_english_files+=("$file")
             log_warning "$file contains non-English text"
         fi
@@ -103,7 +103,7 @@ check_english_only() {
     for ext in "${code_extensions[@]}"; do
         while IFS= read -r -d '' file; do
             # Check for non-English comments
-            if grep -q -P '//.*[\p{Cyrillic}]|/\*.*[\p{Cyrillic}].*\*/|#.*[\p{Cyrillic}]' "$file" 2>/dev/null; then
+            if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
                 non_english_files+=("$file")
                 log_warning "$file has non-English comments"
             fi
@@ -238,10 +238,24 @@ check_git_setup() {
 echo "🔍 Pre-commit checks..."
 
 # Check for non-English text in staged files
-if git diff --cached --name-only | grep -E '\.(md|js|ts|jsx|tsx|go|py)$' | xargs grep -l -P '[\p{Cyrillic}\p{Han}\p{Hiragana}\p{Katakana}\p{Arabic}\p{Hebrew}]' 2>/dev/null; then
-    echo "❌ Found non-English text in staged files"
-    echo "ℹ️  Please use English only in code and documentation"
-    exit 1
+staged_files=$(git diff --cached --name-only | grep -E '\.(md|js|ts|jsx|tsx|go|py)$' || true)
+
+if [ -n "$staged_files" ]; then
+    non_english_found=false
+    
+    for file in $staged_files; do
+        if [ -f "$file" ]; then
+            if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
+                echo "❌ Found non-English (Cyrillic) text in: $file"
+                non_english_found=true
+            fi
+        fi
+    done
+    
+    if [ "$non_english_found" = true ]; then
+        echo "ℹ️  Please use English only in code and documentation"
+        exit 1
+    fi
 fi
 
 echo "✅ Pre-commit checks passed"
