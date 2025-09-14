@@ -1,195 +1,133 @@
-# Kit - Spec-Kit v1.0 Template
+# Spec-Kit v1.0 - Simplified Project Template
 
 🚀 Status: Template Ready (100%)
-📅 Timeline: Ready for Use
-🎯 Focus: Project Structure Template
+📅 Timeline: Ready for Use  
+🎯 Focus: Clean Project Structure
 
-> **🎯 Entry point for humans** | For robots → ROBOT.md
+> **👥 For humans**: Start here | **🤖 For AI**: Use ROBOT.md
 
-## 🚀 Spec-Kit v1.0 - New Methodology
+## 🎯 What is Spec-Kit?
 
-### **Single Entry Point**
-- **👥 For humans** → README.md (this file)
-- **🤖 For robots** → ROBOT.md
+A **streamlined project structure template** that provides:
+- Clear documentation organization
+- Automated validation tools
+- AI-friendly project navigation
+- Essential files only (no bloat)
 
-### **Markdown-first Approach**
-- All documentation in Markdown
-- Root: README.md, ROBOT.md, optionally HUMAN.md
-- Details in /spec/
+## 📦 Core Files
 
-### **Mandatory Reading Order (for robots)**
-ROBOT.md → spec/00-tldr.md → spec/policy.md → spec/arch.md → spec/api.md → spec/roadmap.md
+### **Essential Structure**
+- **`README.md`** - Project overview (this file)
+- **`ROBOT.md`** - AI entry point and instructions
+- **`doctor.sh`** - Automated project validation
+- **`Makefile`** - Common automation commands
 
-## 📦 What's Inside
-
-### **📋 Mandatory Files**
-- **`ROBOT.md`** - Single entry point for AI agents
-- **`spec/00-tldr.md`** - Project overview summary
-- **`spec/policy.md`** - Rules and policies
-- **`spec/arch.md`** - System architecture
-- **`spec/api.md`** - API specification
-- **`spec/roadmap.md`** - Development plan
-- **`spec/briefs/`** - Auto-generated role summaries
-- **`doctor.sh`** - Structure validation script
-
-### **🔧 Additional Files**
-- **`spec/kpi.md`** - Metrics and progress
-- **`spec/product.md`** - Business specification
-- **`spec/requirements.md`** - Technical requirements
-- **`spec/guide.md`** - Development guide
+### **Specification Files**
+- **`spec/00-tldr.md`** - Quick project overview
+- **`spec/policy.md`** - Rules and development policies  
+- **`spec/arch.md`** - Technical architecture
+- **`spec/roadmap.md`** - Requirements and development plan
+- **`spec/api.md`** - API documentation (when needed)
 
 ## 🚀 Quick Start
 
-### 1. Copy Kit to New Project
+### 1. Copy and Setup
 ```bash
-# Copy entire kit to new project
-cp -r kit/ my-new-project/
-cd my-new-project/
+# Copy kit to your project
+cp -r spec-kit/ my-project/
+cd my-project/
 
-# Cleanup
-rm -rf .git/  # Remove kit's git history
-git init      # Initialize new repo
-```
-
-### 2. Project Setup
-```bash
-# Run doctor script for validation
+# Validate structure
 ./doctor.sh
 
-# Replace placeholders in all files
-sed -i 's/\[Project Name\]/My Awesome Project/g' *.md spec/*.md
-sed -i 's/\[Brief Description\]/AI-powered task management/g' *.md spec/*.md
-
-# Or edit manually:
-# [Project Name] → Your project name
-# [Brief Description] → Short description
-# [X] → Real numbers (weeks, budgets)
+# Initialize git (if needed)
+git init
 ```
 
-### 3. Create Project Structure
+### 2. Customize for Your Project
 ```bash
-# Create monorepo structure
-mkdir -p apps/{api,ui,worker}
-mkdir -p libs/shared
-mkdir -p infra/{docker,k8s}
+# Replace placeholders
+sed -i 's/\[Project Name\]/My Project/g' *.md spec/*.md
+sed -i 's/\[Brief Description\]/Your description/g' *.md spec/*.md
 
-# Initialize basic files
-touch .env.example docker-compose.yml Makefile
-
-# Setup git hooks
-./doctor.sh  # Automatically creates pre-commit hook
+# Or edit files manually:
+# [Project Name] → Your actual project name
+# [Brief Description] → Your project description
+# [X] → Real numbers and dates
 ```
 
-## 📊 New Spec-Kit v1.0 Structure
+### 3. Start Development
+```bash
+# Run validation checks
+make check
 
-<<<<<<< HEAD
-### **spec/** - Project Specifications
-- **`product.md`** - Business case, target users, value proposition
-- **`requirements.md`** - Technical requirements, user stories, architecture  
-- **`roadmap.md`** - Development phases, timeline, deliverables
-- **`backlog.md`** - Detailed tasks for AI agents with priorities and dependencies
-- **`kpi.md`** - Progress tracking with visual bars (`▓▓▓░░░░░░░ 30%`)
-- **`guide.md`** - Development guidelines (from START.md)
+# Create your project structure
+mkdir -p src/ tests/ docs/
 
-## 🎯 Development Standards
+# Begin development following spec/roadmap.md
+```
 
-### **GitSpecOps Methodology**
-- **Repository = Truth** - Repo state reflects project reality
-- **Specification-Driven** - Complete spec/ before coding
-- **Visible Progress** - Always clear what's done/in-progress/blocked
-- **AI-Agent Friendly** - Clear guidelines for autonomous development
+## 📊 Simplified Structure
 
-### **Required Files Structure**
 ```
 project/
-├── README.md          # Project overview and current status
-├── spec/
-│   ├── guide.md       # Development guidelines (from START.md)
-│   ├── product.md     # Business specification
-│   ├── requirements.md # Technical requirements
-│   ├── roadmap.md     # Development phases
-│   ├── backlog.md     # Detailed tasks for AI agents
-│   └── kpi.md         # Progress tracking
-├── apps/              # Service implementations
-├── libs/              # Shared code
-└── infra/             # Infrastructure configs
-=======
-```
-project/
-├── README.md              # For humans
-├── ROBOT.md              # For robots
-├── HUMAN.md              # Optional - for humans
+├── README.md              # Project overview (humans)
+├── ROBOT.md              # AI entry point
 ├── doctor.sh             # Validation script
-├── spec/                 # Specifications
-│   ├── 00-tldr.md        # Project overview (MANDATORY)
-│   ├── policy.md         # Rules and policies (MANDATORY)
-│   ├── arch.md           # Architecture (MANDATORY)
-│   ├── api.md            # API documentation (MANDATORY)
-│   ├── roadmap.md        # Development plan (MANDATORY)
-│   ├── product.md        # Business specification
-│   ├── requirements.md   # Technical requirements
-│   ├── kpi.md           # Metrics and progress
-│   ├── guide.md         # Development guide
-│   └── briefs/          # Auto-generated summaries
-│       ├── coder.md     # For developers
-│       ├── tester.md    # For testers
-│       └── pm.md        # For managers
-├── apps/                # Applications
-├── libs/                # Shared code
-└── infra/               # Infrastructure
+├── Makefile              # Automation commands
+└── spec/
+    ├── 00-tldr.md        # Quick overview
+    ├── policy.md         # Rules and policies
+    ├── arch.md           # Technical architecture
+    ├── roadmap.md        # Requirements & roadmap
+    └── api.md            # API documentation
 ```
 
-## 🎯 Key Principles
+## 🎯 Key Features
 
-### **Refs Contract (MANDATORY)**
-Any work result MUST contain minimum 2 references:
+### **Refs Contract**
+Work results must include references:
 ```
 Refs: spec/arch.md#Components; spec/policy.md#Rules
 ```
 
-### **Briefs System**
-Auto-generated summaries for different roles:
-- `spec/briefs/coder.md` - for developers
-- `spec/briefs/tester.md` - for testers
-- `spec/briefs/pm.md` - for managers
+### **Development Stages**
+- **incubate**: Direct pushes, unit tests required
+- **beta**: PR + 1 approval, full testing
+- **release**: PR + 2 approvals, complete validation
 
-### **Lifecycle Stages**
-- **incubate**: direct pushes to main, unit tests
-- **beta**: PR-only, 1 approval, unit+lint+preview deploy
-- **release**: tags v*, 2 approvals, unit+lint+e2e+security
-
-### **Large File Versioning**
-If file >2000 lines → create `file.v2.md` + banner in old
-
-### **Doctor Script**
+### **Automated Validation**
 ```bash
-./doctor.sh              # Full check + report
-./doctor.sh --pre-commit # Pre-commit hook mode
->>>>>>> 4403ee8 (feat: translate all Russian text to English)
+./doctor.sh              # Full health check
+./doctor.sh --pre-commit # Quick pre-commit check
+make check               # Run all validations
 ```
 
 ## ✅ Usage
 
 1. **Copy kit to new project**
 2. **Run `./doctor.sh`** for structure validation
-3. **Configure spec/ files** for your project
-4. **Replace this README** with your project description
-5. **Follow Spec-Kit v1.0 methodology**
+3. **Customize spec/ files** for your project
+4. **Replace README.md** with your project details
+5. **Follow development methodology**
 
-## 🔄 Migration from Previous Versions
+## 🔧 Benefits
 
-### From Kit v2.0
-- `START.md` → `ROBOT.md` (updated logic)
-- Add mandatory files: `spec/00-tldr.md`, `spec/policy.md`, `spec/arch.md`, `spec/api.md`
-- Create `spec/briefs/` structure
-- Add `doctor.sh` script
+### For Developers
+- Clear project structure and rules
+- Automated validation and checks
+- Consistent documentation format
 
-### From GitSpecOps
-- Keep existing `spec/` structure
-- Add new mandatory files
-- Implement refs contract
-- Setup briefs system
+### For AI Agents  
+- Structured entry point via ROBOT.md
+- Mandatory reading order for context
+- Clear references system for traceability
+
+### For Teams
+- Unified documentation approach
+- Stage-based development process
+- Built-in quality gates
 
 ---
 
-**Kit Version**: 3.0 | **Spec-Kit**: v1.0 | **Methodology**: Spec-Kit
+**Version**: Simplified v1.0 | **Focus**: Essential files only

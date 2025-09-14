@@ -49,29 +49,29 @@ Refs: spec/arch.md#Components; spec/policy.md#Rules
 type: brief description
 
 - change 1
-- изменение 2  
-- изменение 3 (максимум 5 пунктов)
+- change 2
+- change 3 (maximum 5 points)
 ```
 
-**Типы коммитов**:
-- `feat:` - новая функциональность
-- `fix:` - исправление бага
-- `docs:` - изменения в документации
-- `refactor:` - рефакторинг кода
-- `test:` - добавление тестов
-- `chore:` - технические изменения
+**Commit Types**:
+- `feat:` - new functionality
+- `fix:` - bug fix
+- `docs:` - documentation changes
+- `refactor:` - code refactoring
+- `test:` - adding tests
+- `chore:` - technical changes
 
-### Формат PR
+### PR Format
 ```markdown
-## Описание
-- что сделано
-- какая проблема решена
-- какие риски
+## Description
+- what was done
+- what problem was solved
+- what risks exist
 
-## Тестирование
-- [ ] unit тесты прошли
-- [ ] lint прошёл
-- [ ] локально протестировано
+## Testing
+- [ ] unit tests passed
+- [ ] lint passed
+- [ ] tested locally
 
 ## Refs
 spec/arch.md#Components; spec/policy.md#Rules
@@ -108,29 +108,29 @@ spec/arch.md#Components; spec/policy.md#Rules
 
 ## 🔐 Security
 
-### Секреты
-- ❌ Никогда не коммитить секреты
-- ✅ Использовать .env.example
-- ✅ Vault/SSM для production
+### Secrets
+- ❌ Never commit secrets
+- ✅ Use .env.example
+- ✅ Vault/SSM for production
 
-### Код
-- ✅ Валидация всех входных данных
-- ✅ Санитизация выходных данных
-- ✅ Структурированные логи без PII
-- ✅ Регулярный аудит зависимостей
+### Code
+- ✅ Validate all input data
+- ✅ Sanitize output data
+- ✅ Structured logs without PII
+- ✅ Regular dependency audit
 
-## 📊 Качество кода
+## 📊 Code Quality
 
-### Стандарты
-- **Функции**: маленькие, понятные
-- **Ошибки**: явная обработка, не игнорировать
-- **Логирование**: структурированное, без секретов
-- **Зависимости**: зафиксированные версии
+### Standards
+- **Functions**: small, understandable
+- **Errors**: explicit handling, don't ignore
+- **Logging**: structured, without secrets
+- **Dependencies**: fixed versions
 
 ### Code Review
-- **Фокус**: логика, безопасность, производительность
-- **Время**: ответ в течение 24 часов
-- **Конструктивность**: предложения, не только критика
+- **Focus**: logic, security, performance
+- **Time**: response within 24 hours
+- **Constructive**: suggestions, not just criticism
 
 ## 🗂️ Documentation
 
@@ -170,11 +170,11 @@ Every README.md MUST have visible status indicators at the top:
 - ✅ Weekly - progress in roadmap
 - ✅ **Daily - README status indicators**
 
-## 🔄 Версионирование
+## 🔄 Versioning
 
-### Файлы >2000 строк
-1. Создать `filename.v2.md`
-2. В старом файле добавить:
+### Files >2000 lines
+1. Create `filename.v2.md`
+2. Add banner to old file:
    ```markdown
    > Archived. See filename.v2.md
    ```
@@ -184,27 +184,26 @@ Every README.md MUST have visible status indicators at the top:
 - `v1.1.0` - minor features
 - `v1.1.1` - bug fixes
 
-## 🚨 Нарушения
+## 🚨 Violations
 
-### Блокирующие нарушения
-- Отсутствие refs в PR
-- Коммит секретов
-- Падающие тесты в main
-- Нарушение stage rules
+### Blocking Violations
+- Missing refs in PR
+- Committed secrets
+- Failing tests in main
+- Stage rule violations
 
-### Процедура исправления
-1. Немедленная остановка работы
-2. Rollback изменений
-3. Исправление проблемы
-4. Повторная проверка
+### Fix Procedure
+1. Immediate work stop
+2. Rollback changes
+3. Fix the problem
+4. Re-verify
 
-## 🔗 Связанные документы
+## 🔗 Related Documents
 
-- **Архитектура**: spec/arch.md
+- **Architecture**: spec/arch.md
 - **API**: spec/api.md
 - **Roadmap**: spec/roadmap.md
-- **Briefs**: spec/briefs/
 
 ---
 
-**Последнее обновление**: [дата] | **Refs**: spec/arch.md#Standards; spec/roadmap.md#Quality
+**Last Updated**: [date] | **Refs**: spec/arch.md#Standards; spec/roadmap.md#Quality

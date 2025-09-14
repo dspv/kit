@@ -1,122 +1,66 @@
-# ROBOT.md - Single Entry Point for AI Agents
+# ROBOT.md - AI Entry Point
 
-> **🤖 For robots**: Always start work from this file  
-> **👥 For humans**: Use README.md
+> **🤖 For AI agents**: Start here for project understanding  
+> **👥 For humans**: Use README.md instead
 
-## 📋 Mandatory Reading Order
+## 📋 Reading Order (MANDATORY)
 
-**CRITICAL**: Read files strictly in the specified order:
+Read files in this exact order:
 
 1. **ROBOT.md** (this file) - basic instructions
-2. **spec/00-tldr.md** - project overview summary  
+2. **spec/00-tldr.md** - project overview  
 3. **spec/policy.md** - rules and constraints
 4. **spec/arch.md** - system architecture
-5. **spec/api.md** - API specification
-6. **spec/roadmap.md** - development plan
+5. **spec/roadmap.md** - requirements and development plan
+6. **spec/api.md** - API specification (if applicable)
 
-## 🎯 Core Principles
+## 🎯 Core Rules
 
-### Single Entry Point
-- **For humans** → README.md
-- **For robots** → ROBOT.md (this file)
-
-### Markdown-first Approach
-- All documentation in Markdown
-- Root: README.md, ROBOT.md, optionally HUMAN.md
-- Details in /spec/
-
-### Refs Contract (MANDATORY)
-Any work result (PR, report, comment) MUST contain minimum 2 references:
+### Refs Contract
+Any work result (PR, commit, report) MUST include 2+ references:
 
 ```
 Refs: spec/arch.md#Components; spec/policy.md#Rules
 ```
 
+### Project Stages
+- **incubate**: Direct pushes, unit tests required
+- **beta**: PR + 1 approval, lint + tests + preview
+- **release**: PR + 2 approvals, full testing + security
+
 ## 📁 Project Structure
 
 ```
 project/
-├── README.md          # For humans
-├── ROBOT.md          # For robots (this file)
-├── HUMAN.md          # Optional - for humans
-├── spec/             # Specifications
-│   ├── 00-tldr.md    # Project overview
-│   ├── policy.md     # Rules and policies
-│   ├── arch.md       # Architecture
-│   ├── api.md        # API documentation
-│   ├── roadmap.md    # Development plan
-│   └── briefs/       # Auto-generated summaries
-│       ├── coder.md  # For developers
-│       ├── tester.md # For testers
-│       └── pm.md     # For managers
-├── apps/             # Applications
-├── libs/             # Shared code
-└── infra/            # Infrastructure
+├── README.md              # For humans
+├── ROBOT.md              # For AI (this file)
+├── doctor.sh             # Validation script
+├── Makefile              # Automation commands
+└── spec/
+    ├── 00-tldr.md        # Quick overview
+    ├── policy.md         # Rules and policies
+    ├── arch.md           # Technical architecture
+    ├── roadmap.md        # Requirements & roadmap
+    └── api.md            # API documentation
 ```
 
-## 🔄 Lifecycle (Stages)
+## ⚡ Quick Start
 
-### incubate
-- Direct pushes to main
-- Unit tests mandatory
-- Fast iterations
-
-### beta  
-- PR only
-- 1 approval mandatory
-- unit + lint + preview deploy
-
-### release
-- Tags v*
-- 2 approvals
-- unit + lint + e2e + security
-
-## 📊 Briefs System
-
-Auto-generated summaries in `spec/briefs/`:
-- **coder.md** - for developers
-- **tester.md** - for testers  
-- **pm.md** - for managers
-
-Use briefs when working with large files (>1000 lines).
-
-## 🔧 Doctor Script
-
-Run `./doctor.sh` before starting work:
-- Checks file structure
-- Generates briefs
-- Suggests split for large files
-
-## 📝 Versioning
-
-If file >2000 lines or milestone closed:
-1. Create `file.v2.md`
-2. Add banner to old file:
-   ```markdown
-   > Archived. See file.v2.md
-   ```
-
-## ⚡ Quick Start for Robots
-
-1. **Read mandatory files** (order above)
-2. **Check project stage** in spec/roadmap.md
-3. **Study current tasks** in spec/roadmap.md
-4. **Follow refs contract** in all results
-5. **Update progress** in corresponding files
+1. Run `./doctor.sh` to validate structure
+2. Read specs in order above
+3. Check current stage in roadmap.md
+4. Follow refs contract in all work
+5. Update progress in relevant files
 
 ## 🚨 Critical Rules
 
-- ❌ **DO NOT start work without reading spec/**
-- ❌ **DO NOT make PR without refs contract**
-- ❌ **DO NOT ignore stage rules**
-- ✅ **ALWAYS read in specified order**
-- ✅ **ALWAYS use refs in results**
-- ✅ **ALWAYS update progress**
-
-## 🔗 Next Step
-
-➡️ **Read spec/00-tldr.md**
+- ❌ **DO NOT** skip reading spec/ files
+- ❌ **DO NOT** make PRs without refs contract
+- ❌ **DO NOT** ignore stage rules
+- ✅ **ALWAYS** read files in specified order
+- ✅ **ALWAYS** include refs in work results
+- ✅ **ALWAYS** update progress
 
 ---
 
-**Kit Version**: 3.0 | **Spec-Kit**: v1.0 | **Stage**: template
+**Version**: Simplified v1.0 | **Next**: spec/00-tldr.md

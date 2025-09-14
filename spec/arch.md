@@ -67,15 +67,15 @@ project/
 #### REST API Design
 ```
 /api/v1/
-├── auth/                 # Авторизация
+├── auth/                 # Authentication
 │   ├── POST /login
 │   ├── POST /register
 │   └── POST /refresh
-├── users/                # Пользователи
+├── users/                # Users
 │   ├── GET /users
 │   ├── GET /users/:id
 │   └── PUT /users/:id
-└── [resource]/           # Другие ресурсы
+└── [resource]/           # Other resources
     ├── GET /[resource]
     ├── POST /[resource]
     ├── GET /[resource]/:id
@@ -83,18 +83,18 @@ project/
     └── DELETE /[resource]/:id
 ```
 
-#### Поток аутентификации
+#### Authentication Flow
 ```
 Client → POST /api/v1/auth/login → JWT Token
 Client → Header: Authorization: Bearer <token>
 API → Validate JWT → Process Request
 ```
 
-## 🗄️ База данных
+## 🗄️ Database
 
-### Дизайн схемы
+### Schema Design
 ```sql
--- Пример основных таблиц
+-- Example core tables
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -112,47 +112,47 @@ CREATE TABLE [main_entity] (
 );
 ```
 
-### Стратегия миграций
-- **Инструмент**: golang-migrate
-- **Расположение**: `/apps/api/migrations/`
-- **Именование**: `YYYYMMDD_HHMMSS_description.up.sql`
-- **Откат**: Всегда создавать `.down.sql`
+### Migration Strategy
+- **Tool**: golang-migrate
+- **Location**: `/apps/api/migrations/`
+- **Naming**: `YYYYMMDD_HHMMSS_description.up.sql`
+- **Rollback**: Always create `.down.sql`
 
-## 🔐 Безопасность
+## 🔐 Security
 
-### Аутентификация и авторизация
+### Authentication and Authorization
 - **JWT Tokens**: Access (15min) + Refresh (7 days)
 - **Password**: bcrypt hashing
-- **Rate Limiting**: По IP и пользователю
-- **CORS**: Настроенные origins
+- **Rate Limiting**: By IP and user
+- **CORS**: Configured origins
 
-### Защита данных
-- **Encryption**: TLS 1.3 для всех соединений
+### Data Protection
+- **Encryption**: TLS 1.3 for all connections
 - **Secrets**: Vault/K8s secrets
-- **Logging**: Без PII данных
-- **Validation**: Все входные данные
+- **Logging**: Without PII data
+- **Validation**: All input data
 
-## 📊 Производительность
+## 📊 Performance
 
-### Стратегия кэширования
+### Caching Strategy
 ```
 Request → Check Redis Cache → If Miss → Database → Cache Result
 ```
 
-### Оптимизация базы данных
-- **Indexes**: На часто используемые поля
-- **Connection Pool**: Настроенный размер
-- **Query Optimization**: EXPLAIN для медленных запросов
+### Database Optimization
+- **Indexes**: On frequently used fields
+- **Connection Pool**: Configured size
+- **Query Optimization**: EXPLAIN for slow queries
 
-### Мониторинг
+### Monitoring
 - **Metrics**: Prometheus + Grafana
 - **Logs**: Structured JSON logs
-- **Tracing**: OpenTelemetry (опционально)
+- **Tracing**: OpenTelemetry (optional)
 - **Health Checks**: `/health` endpoints
 
-## 🚀 Развёртывание
+## 🚀 Deployment
 
-### Контейнеризация
+### Containerization
 ```dockerfile
 # Multi-stage build
 FROM golang:1.21-alpine AS builder
@@ -162,7 +162,7 @@ FROM alpine:latest
 # ... runtime setup ...
 ```
 
-### Развёртывание в Kubernetes
+### Kubernetes Deployment
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -182,9 +182,9 @@ spec:
         - containerPort: 8080
 ```
 
-## 🔄 Процесс разработки
+## 🔄 Development Process
 
-### Локальная разработка
+### Local Development
 ```bash
 # Backend
 cd apps/api
@@ -198,15 +198,15 @@ npm run dev
 docker compose up --build
 ```
 
-### Конвейер CI/CD
+### CI/CD Pipeline
 1. **Lint** → Code quality checks
 2. **Test** → Unit + Integration tests
 3. **Build** → Docker images
 4. **Deploy** → Staging → Production
 
-## 🧪 Стратегия тестирования
+## 🧪 Testing Strategy
 
-### Пирамида тестов
+### Test Pyramid
 ```
     E2E Tests (Few)
    ─────────────────
@@ -215,35 +215,35 @@ docker compose up --build
 Unit Tests (Many)
 ```
 
-### Категории тестов
-- **Unit**: Бизнес-логика, утилиты
+### Test Categories
+- **Unit**: Business logic, utilities
 - **Integration**: API endpoints, DB queries
-- **E2E**: Критичные user flows
+- **E2E**: Critical user flows
 
-## 📈 Масштабируемость
+## 📈 Scalability
 
-### Горизонтальное масштабирование
-- **Stateless Services**: Легко масштабируются
+### Horizontal Scaling
+- **Stateless Services**: Easy to scale
 - **Load Balancer**: Nginx/K8s Ingress
-- **Database**: Read replicas для чтения
+- **Database**: Read replicas for reads
 
-### Целевые показатели производительности
+### Performance Targets
 | Metric | Target | Current |
 |--------|--------|---------|
 | Response Time | <200ms | TBD |
 | Throughput | 1000 RPS | TBD |
 | Uptime | 99.9% | TBD |
 
-## 🔗 Внешние интеграции
+## 🔗 External Integrations
 
-### Необходимые API
+### Required APIs
 - **[API Name]**: [Purpose and usage]
 - **[API Name]**: [Purpose and usage]
 
-### Опциональные интеграции
+### Optional Integrations
 - **[Service]**: [Future integration]
 - **[Service]**: [Future integration]
 
 ---
 
-**Последнее обновление**: [дата] | **Ссылки**: spec/api.md#Эндпоинты; spec/policy.md#Безопасность
+**Last Updated**: [date] | **Refs**: spec/api.md#Endpoints; spec/policy.md#Security
