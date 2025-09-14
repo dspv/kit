@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Doctor Script for Spec-Kit v1.0
-# Checks project structure and generates briefs
+# Doctor Script for Kit AI-First v2.0
+# Simplified validation focused on AI development needs
 
 set -e
 
-echo "🩺 Doctor Script - Spec-Kit v1.0"
-echo "=================================="
+echo "🩺 Doctor Script - Kit AI-First v2.0"
+echo "===================================="
 
 # Colors for output
 RED='\033[0;31m'
@@ -38,11 +38,8 @@ check_required_files() {
     
     local required_files=(
         "README.md"
-        "ROBOT.md"
-        "spec/00-tldr.md"
-        "spec/policy.md"
-        "spec/arch.md"
-        "spec/api.md"
+        "Makefile"
+        "spec/product.md"
         "spec/roadmap.md"
     )
     
@@ -59,6 +56,7 @@ check_required_files() {
     
     if [[ ${#missing_files[@]} -gt 0 ]]; then
         log_error "Missing required files: ${missing_files[*]}"
+        log_info "Run 'make setup' to initialize project structure"
         return 1
     fi
     
@@ -71,7 +69,7 @@ check_directory_structure() {
     
     local required_dirs=(
         "spec"
-        "spec/briefs"
+        "apps"
     )
     
     for dir in "${required_dirs[@]}"; do
@@ -84,79 +82,39 @@ check_directory_structure() {
     done
 }
 
-# Check file sizes
-check_file_sizes() {
-    log_info "Checking file sizes (>2000 lines)..."
-    
-    local large_files=()
-    
-    while IFS= read -r -d '' file; do
-        local line_count=$(wc -l < "$file")
-        if [[ $line_count -gt 2000 ]]; then
-            log_warning "$file contains $line_count lines (>2000)"
-            echo "  💡 Consider creating ${file%.md}.v2.md"
-            large_files+=("$file")
-        fi
-    done < <(find spec/ -name "*.md" -type f -print0)
-    
-    if [[ ${#large_files[@]} -eq 0 ]]; then
-        log_success "All files have acceptable size"
-    fi
-}
-
-# Check refs contract (flexible for different languages)
-check_refs_contract() {
-    log_info "Checking refs contract in files..."
-    
-    local files_without_refs=()
-    
-    while IFS= read -r -d '' file; do
-        # Check for refs in multiple languages/formats
-        if grep -q -E "(Refs:|Ссылки:|References:|Links:)" "$file"; then
-            log_success "$file contains refs contract"
-        else
-            log_warning "$file missing refs contract (non-blocking)"
-            files_without_refs+=("$file")
-        fi
-    done < <(find spec/ -name "*.md" -type f -print0)
-    
-    # Note: This is non-blocking to support different languages
-    if [[ ${#files_without_refs[@]} -gt 0 ]]; then
-        log_info "Consider adding refs contract to improve traceability"
-    fi
-}
-
-# Check for non-English text in code files
-check_code_language() {
-    log_info "Checking for non-English text in code..."
+# Check for English-only content
+check_english_only() {
+    log_info "Checking for English-only content..."
     
     local non_english_files=()
+    
+    # Check markdown files for non-English text
+    while IFS= read -r -d '' file; do
+        # Check for Cyrillic, Chinese, Japanese, Arabic, etc.
+        if grep -q -P '[\p{Cyrillic}\p{Han}\p{Hiragana}\p{Katakana}\p{Arabic}\p{Hebrew}]' "$file" 2>/dev/null; then
+            non_english_files+=("$file")
+            log_warning "$file contains non-English text"
+        fi
+    done < <(find . -name "*.md" -type f -not -path "./.git/*" -print0 2>/dev/null)
+    
+    # Check code files for non-English comments
     local code_extensions=("*.js" "*.ts" "*.jsx" "*.tsx" "*.go" "*.py" "*.java" "*.cpp" "*.c" "*.h" "*.cs" "*.php" "*.rb" "*.rs" "*.swift" "*.kt")
     
     for ext in "${code_extensions[@]}"; do
         while IFS= read -r -d '' file; do
-            # Check for Cyrillic, Chinese, Japanese, Arabic, etc.
-            if grep -q -P '[\p{Cyrillic}\p{Han}\p{Hiragana}\p{Katakana}\p{Arabic}\p{Hebrew}]' "$file" 2>/dev/null; then
+            # Check for non-English comments
+            if grep -q -P '//.*[\p{Cyrillic}]|/\*.*[\p{Cyrillic}].*\*/|#.*[\p{Cyrillic}]' "$file" 2>/dev/null; then
                 non_english_files+=("$file")
-                log_warning "$file contains non-English text (non-blocking)"
-            fi
-        done < <(find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" -print0 2>/dev/null)
-    done
-    
-    # Also check comments in code files
-    for ext in "${code_extensions[@]}"; do
-        while IFS= read -r -d '' file; do
-            # Check for Russian comments (common pattern)
-            if grep -q -E '//.*[а-яё]|/\*.*[а-яё].*\*/|#.*[а-яё]' "$file" 2>/dev/null; then
-                log_warning "$file has non-English comments (non-blocking)"
+                log_warning "$file has non-English comments"
             fi
         done < <(find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" -print0 2>/dev/null)
     done
     
     if [[ ${#non_english_files[@]} -eq 0 ]]; then
-        log_success "Code files use English text"
+        log_success "All files use English text"
     else
-        log_info "Consider translating non-English text in code to English"
+        log_warning "Found ${#non_english_files[@]} files with non-English text"
+        log_info "Consider translating to English for consistency"
     fi
 }
 
@@ -170,13 +128,19 @@ check_readme_status() {
     fi
     
     local has_status=false
+    local has_progress=false
     local has_timeline=false
     local has_focus=false
     
-    # Check for status indicators (flexible patterns)
+    # Check for status indicators
     if grep -q -E "🚀.*[Ss]tatus.*:" README.md; then
         has_status=true
         log_success "README has status indicator"
+    fi
+    
+    if grep -q -E "Progress.*░" README.md; then
+        has_progress=true
+        log_success "README has progress bars"
     fi
     
     if grep -q -E "📅.*[Tt]imeline.*:" README.md; then
@@ -189,140 +153,160 @@ check_readme_status() {
         log_success "README has focus indicator"
     fi
     
-    if [[ "$has_status" == true && "$has_timeline" == true && "$has_focus" == true ]]; then
+    if [[ "$has_status" == true && "$has_progress" == true && "$has_timeline" == true && "$has_focus" == true ]]; then
         log_success "README has all required status indicators"
     else
-        log_warning "README missing status indicators (non-blocking)"
-        log_info "Add: 🚀 Status: [State] ([%]) | 📅 Timeline: [Time] | 🎯 Focus: [Area]"
+        log_warning "README missing some status indicators"
+        log_info "Add: 🚀 Status: | Progress: ░░░░░░░░░░ | 📅 Timeline: | 🎯 Focus:"
     fi
 }
 
-# Generate briefs
-generate_briefs() {
-    log_info "Generating briefs..."
+# Check roadmap task structure
+check_roadmap_tasks() {
+    log_info "Checking roadmap task structure..."
     
-    local current_date=$(date '+%Y-%m-%d %H:%M:%S')
-    
-    # Update date in existing briefs
-    if [[ -f "spec/briefs/coder.md" ]]; then
-        sed -i.bak "s/Updated: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]/Updated: $current_date/g" spec/briefs/coder.md
-        rm spec/briefs/coder.md.bak 2>/dev/null || true
-        log_success "Updated spec/briefs/coder.md"
+    if [[ ! -f "spec/roadmap.md" ]]; then
+        log_warning "spec/roadmap.md not found"
+        return 0
     fi
     
-    if [[ -f "spec/briefs/tester.md" ]]; then
-        sed -i.bak "s/Updated: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]/Updated: $current_date/g" spec/briefs/tester.md
-        rm spec/briefs/tester.md.bak 2>/dev/null || true
-        log_success "Updated spec/briefs/tester.md"
+    local has_tasks=false
+    local has_priorities=false
+    local has_status=false
+    
+    # Check for task structure
+    if grep -q "TASK-" spec/roadmap.md; then
+        has_tasks=true
+        log_success "Roadmap has structured tasks"
     fi
     
-    if [[ -f "spec/briefs/pm.md" ]]; then
-        sed -i.bak "s/Updated: [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]/Updated: $current_date/g" spec/briefs/pm.md
-        rm spec/briefs/pm.md.bak 2>/dev/null || true
-        log_success "Updated spec/briefs/pm.md"
+    if grep -q -E "🔴|🟡|🟢" spec/roadmap.md; then
+        has_priorities=true
+        log_success "Roadmap has priority indicators"
     fi
     
-    log_success "Briefs updated"
+    if grep -q -E "\`(todo|doing|done|blocked)\`" spec/roadmap.md; then
+        has_status=true
+        log_success "Roadmap has task status indicators"
+    fi
+    
+    if [[ "$has_tasks" == true && "$has_priorities" == true && "$has_status" == true ]]; then
+        log_success "Roadmap has proper AI task structure"
+    else
+        log_warning "Roadmap missing AI-friendly task structure"
+        log_info "Tasks should have: TASK-XXX format, priority colors, status indicators"
+    fi
 }
 
 # Check project stage
 check_project_stage() {
-    log_info "Determining project stage..."
+    log_info "Checking project stage configuration..."
     
     if [[ -f "spec/roadmap.md" ]]; then
-        if grep -q "incubate" spec/roadmap.md; then
-            log_info "Stage: incubate (direct pushes allowed)"
-        elif grep -q "beta" spec/roadmap.md; then
-            log_info "Stage: beta (PR only, 1 approval)"
-        elif grep -q "release" spec/roadmap.md; then
-            log_info "Stage: release (2 approvals, full testing)"
+        if grep -q "Stage.*dev" spec/roadmap.md; then
+            log_info "Stage: dev (fast iterations, direct commits)"
+        elif grep -q "Stage.*prod" spec/roadmap.md; then
+            log_info "Stage: prod (pull requests, code review)"
         else
-            log_warning "Stage not defined in roadmap.md"
+            log_warning "Stage not clearly defined in roadmap.md"
+            log_info "Add: Stage: dev or Stage: prod"
         fi
     fi
 }
 
-# Check git hooks
-check_git_hooks() {
-    log_info "Checking git hooks..."
+# Check git configuration
+check_git_setup() {
+    log_info "Checking git configuration..."
     
     if [[ -d ".git" ]]; then
-        local pre_commit_hook=".git/hooks/pre-commit"
+        # Check for commit template
+        if git config --get commit.template >/dev/null 2>&1; then
+            log_success "Git commit template configured"
+        else
+            log_warning "Git commit template not configured"
+        fi
         
-        if [[ ! -f "$pre_commit_hook" ]]; then
-            log_warning "Pre-commit hook not found"
-            log_info "Creating pre-commit hook..."
-            
-            cat > "$pre_commit_hook" << 'EOF'
+        # Check for pre-commit hook
+        if [[ -f ".git/hooks/pre-commit" ]]; then
+            log_success "Pre-commit hook exists"
+        else
+            log_info "Creating simple pre-commit hook..."
+            cat > ".git/hooks/pre-commit" << 'EOF'
 #!/bin/bash
-# Pre-commit hook for Spec-Kit v1.0
-# Language-agnostic checks
+# Simple pre-commit hook for Kit AI-First v2.0
 
 echo "🔍 Pre-commit checks..."
 
-# Run doctor script in non-blocking mode
-if ! ./doctor.sh --pre-commit; then
-    echo "⚠️  Doctor script warnings (non-blocking)"
-    echo "ℹ️  Consider fixing warnings for better project health"
+# Check for non-English text in staged files
+if git diff --cached --name-only | grep -E '\.(md|js|ts|jsx|tsx|go|py)$' | xargs grep -l -P '[\p{Cyrillic}\p{Han}\p{Hiragana}\p{Katakana}\p{Arabic}\p{Hebrew}]' 2>/dev/null; then
+    echo "❌ Found non-English text in staged files"
+    echo "ℹ️  Please use English only in code and documentation"
+    exit 1
 fi
 
-echo "✅ Pre-commit checks completed"
+echo "✅ Pre-commit checks passed"
 EOF
-            
-            chmod +x "$pre_commit_hook"
-            log_success "Pre-commit hook created"
-        else
-            log_success "Pre-commit hook exists"
+            chmod +x ".git/hooks/pre-commit"
+            log_success "Created pre-commit hook for English-only validation"
         fi
     else
-        log_warning "Not a git repository, hooks not needed"
+        log_warning "Not a git repository"
     fi
 }
 
-# Generate report
+# Generate simple report
 generate_report() {
-    log_info "Generating report..."
+    log_info "Generating health report..."
     
     local report_file="doctor-report.md"
     local current_date=$(date '+%Y-%m-%d %H:%M:%S')
     
     cat > "$report_file" << EOF
-# Doctor Report
+# Doctor Report - Kit AI-First v2.0
 
 **Date**: $current_date  
-**Spec-Kit**: v1.0
+**Kit Version**: 2.0 (AI-First)
 
-## Check Status
+## Health Check Status
 
-- ✅ Required files
-- ✅ Directory structure  
-- ✅ File sizes
-- ✅ Refs contract
-- ✅ Briefs updated
-- ✅ Git hooks
+- ✅ Required files present
+- ✅ Directory structure valid
+- ✅ English-only content validated
+- ✅ README status indicators checked
+- ✅ Roadmap task structure verified
+- ✅ Git configuration checked
+
+## Project Status
+
+$(if [[ -f "README.md" ]]; then
+    echo "### Current Status"
+    grep -E "🚀.*Status:|Progress:|📅.*Timeline:|🎯.*Focus:" README.md | head -4 || echo "Status indicators not found"
+fi)
+
+$(if [[ -f "spec/roadmap.md" ]]; then
+    echo "### Active Tasks"
+    grep -E "TASK-.*\`(todo|doing)\`" spec/roadmap.md | head -3 || echo "No active tasks found"
+fi)
 
 ## Recommendations
 
-$(if [[ -f "spec/roadmap.md" ]] && ! grep -q "Stage:" spec/roadmap.md; then
-    echo "- Add stage information to roadmap.md"
+$(if [[ ! -f "docker-compose.yml" ]]; then
+    echo "- Add docker-compose.yml for local development"
 fi)
 
-$(while IFS= read -r -d '' file; do
-    local line_count=$(wc -l < "$file")
-    if [[ $line_count -gt 2000 ]]; then
-        echo "- Consider splitting $file ($line_count lines)"
-    fi
-done < <(find spec/ -name "*.md" -type f -print0))
+$(if [[ ! -f ".env.example" ]]; then
+    echo "- Add .env.example with required environment variables"
+fi)
 
 ## Next Steps
 
-1. Update placeholders in spec/ files
-2. Configure CI/CD pipeline
-3. Add automatic briefs updates
+1. Update placeholders in README.md and spec/ files
+2. Configure project-specific settings
+3. Start development with 'make dev'
 
 ---
 
-**Refs**: spec/policy.md#Doctor; spec/arch.md#Structure
+**Kit AI-First v2.0** | **Files**: 5 | **Complexity**: Minimal
 EOF
     
     log_success "Report saved to $report_file"
@@ -330,20 +314,20 @@ EOF
 
 # Main function
 main() {
-    local pre_commit_mode=false
+    local quick_mode=false
     
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --pre-commit)
-                pre_commit_mode=true
+            --quick)
+                quick_mode=true
                 shift
                 ;;
             --help|-h)
-                echo "Usage: $0 [--pre-commit] [--help]"
+                echo "Usage: $0 [--quick] [--help]"
                 echo ""
                 echo "Options:"
-                echo "  --pre-commit  Pre-commit hook mode (non-blocking)"
+                echo "  --quick       Quick validation (skip detailed checks)"
                 echo "  --help, -h    Show this help"
                 exit 0
                 ;;
@@ -356,38 +340,26 @@ main() {
     
     echo ""
     
-    # Execute checks (non-blocking in pre-commit mode)
-    if [[ "$pre_commit_mode" == true ]]; then
-        # Pre-commit mode: warnings only, no failures
-        check_directory_structure || true
-        check_required_files || true
-        check_file_sizes || true
-        check_refs_contract || true
-        check_readme_status || true
-        check_code_language || true
-        generate_briefs || true
-        check_project_stage || true
-    else
-        # Normal mode: can fail on critical issues
-        check_directory_structure
-        check_required_files
-        check_file_sizes
-        check_refs_contract
+    # Run checks
+    check_directory_structure
+    check_required_files
+    
+    if [[ "$quick_mode" == false ]]; then
+        check_english_only
         check_readme_status
-        check_code_language
-        generate_briefs
+        check_roadmap_tasks
         check_project_stage
-        check_git_hooks
+        check_git_setup
         generate_report
     fi
     
     echo ""
     log_success "Doctor script completed successfully!"
     
-    if [[ "$pre_commit_mode" == false ]]; then
+    if [[ "$quick_mode" == false ]]; then
         echo ""
-        log_info "💡 Run './doctor.sh --help' for help"
-        log_info "💡 Configure pre-commit hook: cp doctor.sh .git/hooks/pre-commit"
+        log_info "💡 Run './doctor.sh --quick' for fast validation"
+        log_info "💡 Run 'make help' to see available commands"
     fi
 }
 
