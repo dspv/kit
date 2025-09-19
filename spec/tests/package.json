@@ -1,0 +1,35 @@
+{
+  "name": "repokit-tests",
+  "version": "1.0.0",
+  "description": "RepoKIT Standard Test Suite",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep=\"Smoke Tests\" --reporter=html --reporter=json",
+    "test:e2e": "playwright test --grep=\"E2E Tests\" --reporter=html --reporter=json",
+    "test:api": "playwright test --grep=\"API Tests\" --reporter=html --reporter=json",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "install-browsers": "playwright install",
+    "install-deps": "playwright install-deps"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.40.0",
+    "@faker-js/faker": "^8.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "repokit",
+    "testing",
+    "playwright",
+    "e2e",
+    "smoke-tests",
+    "api-tests"
+  ],
+  "author": "RepoKIT Standards",
+  "license": "MIT"
+}

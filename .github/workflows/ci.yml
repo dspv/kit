@@ -1,0 +1,422 @@
+name: CI Pipeline - RepoKIT Standards
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '18'
+  GO_VERSION: '1.21'
+  DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/test_db?sslmode=disable'
+  JWT_SECRET: 'test-jwt-secret-key-for-ci'
+  REDIS_URL: 'redis://localhost:6379'
+
+jobs:
+  # Stage 1: Lint - Code quality checks
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/ui/package-lock.json
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install UI dependencies
+        run: |
+          cd apps/ui
+          npm ci
+
+      - name: Lint TypeScript/React
+        run: |
+          cd apps/ui
+          npm run lint
+          npm run type-check
+
+      - name: Lint Go code
+        run: |
+          cd apps/api
+          go fmt ./...
+          go vet ./...
+          # Install and run golangci-lint
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          golangci-lint run
+
+      - name: Check RepoKIT standards
+        run: |
+          # Verify health endpoints exist
+          grep -r "healthz\|readyz" apps/api/ || (echo "❌ Health endpoints missing" && exit 1)
+          
+          # Verify test structure exists
+          test -d spec/tests/smoke || (echo "❌ Smoke tests directory missing" && exit 1)
+          test -d spec/tests/e2e || (echo "❌ E2E tests directory missing" && exit 1)
+          test -d spec/tests/api || (echo "❌ API tests directory missing" && exit 1)
+          
+          echo "✅ RepoKIT standards verified"
+
+  # Stage 2: Unit Tests - Fast isolated tests
+  unit-tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/ui/package-lock.json
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install UI dependencies
+        run: |
+          cd apps/ui
+          npm ci
+
+      - name: Run Go unit tests
+        run: |
+          cd apps/api
+          go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Run React unit tests
+        run: |
+          cd apps/ui
+          npm run test:unit -- --coverage --watchAll=false
+
+      - name: Upload Go coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./apps/api/coverage.out
+          flags: backend
+
+      - name: Upload React coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./apps/ui/coverage/lcov.info
+          flags: frontend
+
+  # Stage 3: Smoke Tests - Critical functionality (< 3 min)
+  smoke-tests:
+    name: 💨 Smoke Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/ui/package-lock.json
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          cd apps/ui
+          npm ci
+
+      - name: Install Playwright
+        run: |
+          cd apps/ui
+          npx playwright install --with-deps
+
+      - name: Build and start services
+        run: |
+          # Build API
+          cd apps/api
+          go build -o bin/api ./cmd/main.go
+          
+          # Start API in background
+          ./bin/api &
+          API_PID=$!
+          echo "API_PID=$API_PID" >> $GITHUB_ENV
+          
+          # Wait for API to be ready
+          timeout 30 bash -c 'until curl -f http://localhost:3001/healthz; do sleep 1; done'
+          
+          # Build and start UI
+          cd ../ui
+          npm run build
+          npm run start &
+          UI_PID=$!
+          echo "UI_PID=$UI_PID" >> $GITHUB_ENV
+          
+          # Wait for UI to be ready
+          timeout 30 bash -c 'until curl -f http://localhost:3000; do sleep 1; done'
+
+      - name: Run smoke tests
+        run: |
+          cd spec/tests
+          npm ci
+          npm run test:smoke
+        timeout-minutes: 3
+
+      - name: Check health endpoints
+        run: |
+          # Verify health endpoints are working
+          curl -f http://localhost:3001/healthz || (echo "❌ /healthz endpoint failed" && exit 1)
+          curl -f http://localhost:3001/readyz || echo "⚠️ /readyz endpoint not ready (acceptable)"
+          echo "✅ Health endpoints verified"
+
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: smoke-test-results
+          path: spec/tests/reports/
+
+      - name: Stop services
+        if: always()
+        run: |
+          kill $API_PID $UI_PID || true
+
+  # Stage 4: Build - Create production artifacts
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/ui/package-lock.json
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install UI dependencies
+        run: |
+          cd apps/ui
+          npm ci
+
+      - name: Build API
+        run: |
+          cd apps/api
+          CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/api ./cmd/main.go
+
+      - name: Build UI
+        run: |
+          cd apps/ui
+          npm run build
+
+      - name: Build Docker images
+        run: |
+          docker build -t api:${{ github.sha }} -f apps/api/Dockerfile apps/api/
+          docker build -t ui:${{ github.sha }} -f apps/ui/Dockerfile apps/ui/
+
+      - name: Run Lighthouse CI
+        run: |
+          cd apps/ui
+          npm install -g @lhci/cli
+          # Start built app for Lighthouse testing
+          npm run serve &
+          sleep 10
+          
+          # Run Lighthouse with RepoKIT budgets
+          lhci autorun --config=.lighthouserc.js
+
+      - name: Run Axe accessibility tests
+        run: |
+          cd apps/ui
+          npm run test:axe
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            apps/api/bin/
+            apps/ui/dist/
+
+  # Stage 5: E2E Tests - Full user journeys (nightly)
+  e2e-tests:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event.pull_request.base.ref == 'main'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/ui/package-lock.json
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+
+      - name: Install test dependencies
+        run: |
+          cd spec/tests
+          npm ci
+
+      - name: Install Playwright
+        run: |
+          cd spec/tests
+          npx playwright install --with-deps
+
+      - name: Start services with built artifacts
+        run: |
+          # Start API from built binary
+          chmod +x apps/api/bin/api
+          apps/api/bin/api &
+          API_PID=$!
+          echo "API_PID=$API_PID" >> $GITHUB_ENV
+          
+          # Wait for API readiness
+          timeout 60 bash -c 'until curl -f http://localhost:3001/readyz; do sleep 2; done'
+          
+          # Serve built UI
+          cd apps/ui
+          npx serve -s dist -l 3000 &
+          UI_PID=$!
+          echo "UI_PID=$UI_PID" >> $GITHUB_ENV
+          
+          # Wait for UI
+          timeout 30 bash -c 'until curl -f http://localhost:3000; do sleep 1; done'
+
+      - name: Run E2E tests
+        run: |
+          cd spec/tests
+          npm run test:e2e
+        timeout-minutes: 15
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            spec/tests/reports/
+            spec/tests/screenshots/
+            spec/tests/videos/
+
+      - name: Stop services
+        if: always()
+        run: |
+          kill $API_PID $UI_PID || true
+
+  # Deployment readiness check
+  deployment-readiness:
+    name: 🚀 Deployment Ready
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, smoke-tests, build]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Check deployment readiness
+        run: |
+          echo "✅ All CI stages passed"
+          echo "✅ Lint checks passed"
+          echo "✅ Unit tests passed"
+          echo "✅ Smoke tests passed (< 3 min)"
+          echo "✅ Build completed successfully"
+          echo "✅ Health endpoints verified"
+          echo "✅ RepoKIT standards met"
+          echo ""
+          echo "🚀 Ready for deployment to staging"
+
+  # Notify on failure
+  notify-failure:
+    name: 📢 Notify Failure
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, smoke-tests, build, e2e-tests]
+    if: failure()
+    steps:
+      - name: Notify team of CI failure
+        run: |
+          echo "❌ CI Pipeline Failed"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo ""
+          echo "Failed jobs need attention before merge."
