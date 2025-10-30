@@ -1,4 +1,4 @@
-# Kit - Development Standards for AI Agents
+# DevKit - Development Standards for AI Agents
 
 > Keep your repos clean, consistent, and AI-ready
 
@@ -20,7 +20,7 @@ You're building with AI agents. But every repo is different:
 
 ## The Solution
 
-**Kit = Your development standards as code**
+**DevKit = Your development standards as code**
 
 One framework that enforces:
 - English-only code and docs (pre-commit blocks violations)
@@ -37,7 +37,7 @@ One framework that enforces:
 ### Option 1: New Project
 
 ```bash
-# Use Kit as template on GitHub, then:
+# Use DevKit as template on GitHub, then:
 git clone your-new-repo
 cd your-new-repo
 ./doctor.sh                    # Validate everything works
@@ -50,26 +50,26 @@ Edit `.ai/context.md` with your product details, then `make dev`.
 
 ```bash
 # In your project directory:
-curl -sL https://github.com/dspv/kit/archive/main.tar.gz | tar xz --strip=1
+curl -sL https://github.com/dspv/devkit/archive/main.tar.gz | tar xz --strip=1
 ./doctor.sh                    # Check what needs fixing
 ```
 
-Kit validates your code, docs, and commits. Fix issues, then commit.
+DevKit validates your code, docs, and commits. Fix issues, then commit.
 
 ### Option 3: Auto-Sync (Coming Soon)
 
-Add to `.github/workflows/kit-sync.yml`:
+Add to `.github/workflows/devkit-sync.yml`:
 ```yaml
-name: Kit Sync
+name: DevKit Sync
 on:
   schedule:
     - cron: '0 0 * * 1'  # Weekly
 jobs:
   sync:
-    uses: dspv/kit/.github/workflows/sync.yml@main
+    uses: dspv/devkit/.github/workflows/sync.yml@main
 ```
 
-Never manually update Kit files again.
+Never manually update DevKit files again.
 
 ---
 
@@ -97,7 +97,7 @@ Never manually update Kit files again.
 
 ## How It Works
 
-Kit enforces 4 core principles:
+DevKit enforces 4 core principles:
 
 ### 1. English Only
 ```bash
@@ -112,7 +112,7 @@ git commit -m "feat: add authentication"  # ✅ Passes
 
 ### 2. Consolidated Documentation
 ```
-Good (Kit way):
+Good (DevKit way):
 GUIDE.md           # Principles (read once, reference always)
 DOCS.md            # Implementation details (grows with project)
 
@@ -157,17 +157,17 @@ Freedom: Choose JWT vs session, token expiration policy
 
 **Indie Hacker with 5 Side Projects**
 Problem: Each repo has different standards. Some have Russian comments.
-Solution: Apply Kit to all 5. Run `./doctor.sh` to catch issues.
+Solution: Apply DevKit to all 5. Run `./doctor.sh` to catch issues.
 Result: Consistent quality. Updates sync automatically with GitHub Action.
 
 **Agency Building Client Projects**
 Problem: 20+ repos. Junior devs don't follow standards.
-Solution: Kit Team tier with custom company rules.
+Solution: DevKit Team tier with custom company rules.
 Result: All deliverables meet agency standards. Clients get professional code.
 
 **Startup Growing 3 → 30 Engineers**
 Problem: Early repos are messy. New hires ask "where are the guidelines?"
-Solution: Kit enforces standards from day 1. GUIDE.md is single source of truth.
+Solution: DevKit enforces standards from day 1. GUIDE.md is single source of truth.
 Result: Faster onboarding. Code reviews focus on logic, not style.
 
 ---
@@ -175,7 +175,7 @@ Result: Faster onboarding. Code reviews focus on logic, not style.
 ## What's Inside
 
 ```
-kit/
+devkit/
 ├── README.md          # This file
 ├── GUIDE.md           # Development principles (English-only, context management, etc)
 ├── DOCS.md            # Documentation template (grows with your project)
@@ -191,7 +191,7 @@ kit/
 **Your project** (after `make setup`):
 ```
 your-project/
-├── Kit files above    # Standards and validation
+├── DevKit files above # Standards and validation
 ├── apps/
 │   ├── api/           # Backend (Go by default)
 │   ├── ui/            # Frontend (TypeScript + React)
@@ -227,7 +227,7 @@ git commit -m "добавил фичу"
 
 ## Default Tech Stack
 
-Kit recommends (override in `.ai/context.md`):
+DevKit recommends (override in `.ai/context.md`):
 
 - **Backend**: Go (fast, simple deployment, strong typing)
 - **Frontend**: TypeScript + React/Next.js (type safety, SEO)
@@ -235,7 +235,7 @@ Kit recommends (override in `.ai/context.md`):
 - **Cache**: Redis (performance)
 - **Infrastructure**: Docker + Kubernetes (production-ready)
 
-**Not opinionated**. Use Python/Node/Rust if you prefer. Kit works with any stack.
+**Not opinionated**. Use Python/Node/Rust if you prefer. DevKit works with any stack.
 
 ---
 
@@ -252,7 +252,7 @@ Kit recommends (override in `.ai/context.md`):
 ## Roadmap
 
 **Q4 2025** (Current)
-- [x] Kit v3.0 open-source release
+- [x] DevKit v3.0 open-source release
 - [x] English-only enforcement
 - [x] File naming conventions
 - [x] PR-based workflow
@@ -279,7 +279,7 @@ Kit recommends (override in `.ai/context.md`):
 ## FAQ
 
 **Is this really free?**
-Yes. AGPL-3.0 license. Use Kit for any purpose, forever.
+Yes. AGPL-3.0 license. Use DevKit for any purpose, forever.
 
 **What do I pay for in Pro?**
 Automation. Free = manual setup/updates. Pro = auto-sync, dashboard, PR checks.
@@ -288,7 +288,7 @@ Automation. Free = manual setup/updates. Pro = auto-sync, dashboard, PR checks.
 Free: Fork and modify (it's open source). Team tier: Customize via config.
 
 **Do I need Claude Code or Cursor?**
-No. Kit works with any AI assistant (or none). Just optimized for AI workflows.
+No. DevKit works with any AI assistant (or none). Just optimized for AI workflows.
 
 **Will this slow me down?**
 Opposite. Faster development. No debates about "where should this doc go?" Clear standards = faster decisions.
@@ -306,7 +306,7 @@ We're AI-specific. They're not. Plus we're faster and more opinionated.
 
 **Show support**:
 ```markdown
-[![Built with Kit](https://img.shields.io/badge/built%20with-Kit-blue)](https://github.com/dspv/kit)
+[![Built with DevKit](https://img.shields.io/badge/built%20with-DevKit-blue)](https://github.com/dspv/devkit)
 ```
 
 ---
@@ -321,4 +321,4 @@ GitHub Action, dashboard, analytics require paid license.
 
 ---
 
-**Kit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/kit)
+**DevKit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/devkit)
