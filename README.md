@@ -153,22 +153,50 @@ Freedom: Choose JWT vs session, token expiration policy
 
 ---
 
-## Use Cases
+## Who Uses DevKit
 
-**Indie Hacker with 5 Side Projects**
-Problem: Each repo has different standards. Some have Russian comments.
-Solution: Apply DevKit to all 5. Run `./doctor.sh` to catch issues.
-Result: Consistent quality. Updates sync automatically with GitHub Action.
+### Solo Developers & Indie Hackers
 
-**Agency Building Client Projects**
-Problem: 20+ repos. Junior devs don't follow standards.
-Solution: DevKit Team tier with custom company rules.
-Result: All deliverables meet agency standards. Clients get professional code.
+**The Challenge**
+Managing multiple side projects becomes chaotic. Each repo evolves differently - one uses tabs, another spaces. Documentation lives in different places. Six months later, you can't remember which project follows which conventions.
 
-**Startup Growing 3 → 30 Engineers**
-Problem: Early repos are messy. New hires ask "where are the guidelines?"
-Solution: DevKit enforces standards from day 1. GUIDE.md is single source of truth.
-Result: Faster onboarding. Code reviews focus on logic, not style.
+**With DevKit**
+- Apply same standards to all projects in 5 minutes
+- One `./doctor.sh` command validates everything
+- Updates propagate automatically when you improve the framework
+- Switch between projects without mental context switch
+
+**Result**: Ship faster. Spend time building features, not remembering conventions.
+
+---
+
+### Development Agencies
+
+**The Challenge**
+Delivering 20+ client projects per year. Junior developers join the team. Each client repo needs to meet quality standards. Code reviews become bottlenecks - "use English comments", "no hardcoded secrets", "where's the documentation?"
+
+**With DevKit**
+- Custom company rules enforced across all client projects
+- Pre-commit hooks block common mistakes before they reach review
+- New developers onboard faster - standards are automated, not memorized
+- Client deliverables consistently professional
+
+**Result**: Double team capacity. Code reviews focus on architecture, not formatting. Clients receive production-ready code.
+
+---
+
+### Growing Startups
+
+**The Challenge**
+Started with 3 engineers, now hiring #30. Early repos are "move fast" quality. New hires ask: "Where are the coding guidelines?" "How should I structure this?" "Which naming convention do we use?" Documentation is scattered across Notion, Slack, and tribal knowledge.
+
+**With DevKit**
+- GUIDE.md becomes single source of truth for engineering standards
+- All repos follow same structure - frontend, backend, infra
+- AI agents (Claude Code, Cursor) get consistent context across codebase
+- Standards enforced automatically, not through Slack messages
+
+**Result**: Engineering culture scales. New engineers productive on day 1. Codebase stays clean as team grows.
 
 ---
 
