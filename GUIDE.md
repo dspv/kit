@@ -10,12 +10,13 @@
 1. [Core Principles](#core-principles)
 2. [Context Management](#context-management)
 3. [Documentation Management](#documentation-management)
-4. [Code Quality Heuristics](#code-quality-heuristics)
-5. [Security Heuristics](#security-heuristics)
-6. [Testing Strategy](#testing-strategy)
-7. [Language and Style](#language-and-style)
-8. [Tech Stack Defaults](#tech-stack-defaults)
-9. [Development Workflow](#development-workflow)
+4. [File and Directory Naming](#file-and-directory-naming)
+5. [Code Quality Heuristics](#code-quality-heuristics)
+6. [Security Heuristics](#security-heuristics)
+7. [Testing Strategy](#testing-strategy)
+8. [Language and Style](#language-and-style)
+9. [Tech Stack Defaults](#tech-stack-defaults)
+10. [Development Workflow](#development-workflow)
 
 ---
 
@@ -280,6 +281,154 @@ Need to document something?
 - [ ] API endpoints documented (if added)
 - [ ] Temporary notes moved or deleted from .ai/notes/
 - [ ] Commit message references documentation updates
+
+---
+
+## File and Directory Naming
+
+> Consistent, predictable naming makes code navigation faster for both humans and AI
+
+### Core Principle: One Word, One Purpose
+
+**Files should have clear, single-purpose names using kebab-case.**
+
+### Documentation Files
+
+**Location**: Root directory (always visible)
+**Naming**: UPPERCASE.md for framework docs, lowercase.md for project-specific
+
+```
+Root documentation (UPPERCASE):
+GUIDE.md           # Development principles (this file)
+DOCS.md            # Living documentation (implementation details)
+README.md          # Entry point, quick start
+CHANGELOG.md       # Version history
+CONTRIBUTING.md    # How to contribute
+LICENSE            # Legal terms
+```
+
+**Why UPPERCASE**:
+- Immediately visible in file listings
+- Distinguishes framework docs from code
+- Standard practice (README, LICENSE, etc.)
+
+### Project Context Files
+
+**Location**: `.ai/` directory (AI-specific context)
+**Naming**: kebab-case for all context files
+
+```
+.ai/
+├── context.md          # Business context (what, why, for whom)
+├── tasks.md            # Task queue for autonomous development
+└── notes/              # Temporary working notes
+    ├── auth-flow.md    # Example: working on authentication
+    └── api-design.md   # Example: API design exploration
+```
+
+**Naming rules**:
+- Use descriptive single words: `context.md`, `tasks.md`
+- Multi-word: kebab-case (`product-strategy.md`)
+- Temporary notes: descriptive + task-oriented (`auth-flow.md`)
+- NO underscores, NO spaces, NO camelCase
+
+**Bad examples**:
+```
+.ai/ProductStrategy.md      # Don't use PascalCase
+.ai/product_strategy.md     # Don't use snake_case
+.ai/PRODUCT_STRATEGY.md     # Don't use UPPERCASE (reserved for root)
+.ai/notes/my notes.md       # Don't use spaces
+```
+
+**Good examples**:
+```
+.ai/context.md              # Single word
+.ai/product-strategy.md     # Multi-word with kebab-case
+.ai/notes/auth-redesign.md  # Descriptive, task-focused
+```
+
+### Specification Documents
+
+**Location**: `spec/` directory (optional, for complex projects)
+**Naming**: kebab-case, descriptive
+
+```
+spec/
+├── api-design.md          # API endpoints specification
+├── database-schema.md     # Database structure
+├── product-strategy.md    # Business strategy (moved from .ai/)
+└── architecture.md        # System architecture decisions
+```
+
+**When to use `spec/`**:
+- Complex projects with extensive specifications
+- When `.ai/` context files get too large (> 500 lines)
+- Formal documentation that rarely changes
+
+**When to keep in `.ai/`**:
+- MVP or early-stage projects
+- Living documents that change frequently
+- AI agent working context
+
+### Code Files
+
+**Naming**: Always lowercase, descriptive
+
+```
+Go:
+user.go, auth.go, handler.go       # Good: clear purpose
+util.go, helper.go, common.go      # Bad: too generic
+
+TypeScript/JavaScript:
+user-service.ts                    # Good: multi-word kebab-case
+UserService.ts                     # Also OK: PascalCase for classes
+userService.ts                     # OK: camelCase if consistent
+```
+
+**Follow language conventions**:
+- Go: lowercase with underscores for multi-word (user_service.go)
+- TypeScript: PascalCase for classes, camelCase for utilities
+- Python: snake_case (user_service.py)
+
+### Directory Structure
+
+**Top-level directories**: Always lowercase, single word or kebab-case
+
+```
+Good structure:
+project/
+├── apps/           # Applications
+├── libs/           # Shared libraries
+├── infra/          # Infrastructure
+├── spec/           # Specifications (optional)
+└── .ai/            # AI context
+
+Bad structure:
+project/
+├── Apps/           # Don't capitalize
+├── my_libs/        # Don't use snake_case
+├── Spec Files/     # Don't use spaces
+```
+
+### Migration Path
+
+**When refactoring existing projects**:
+
+1. **Don't break existing conventions** without discussion
+2. **New files** follow these rules
+3. **Gradual migration** during major refactors
+4. **Document exceptions** in project README
+
+**Example migration commit**:
+```
+refactor: standardize file naming to kebab-case
+
+- Renamed PRODUCT_STRATEGY.md -> spec/product-strategy.md
+- Moved complex specs from .ai/ to spec/
+- Updated references in documentation
+
+Part of Kit naming conventions adoption.
+```
 
 ---
 
@@ -782,6 +931,53 @@ Technical notes:
 
 Breaking changes: none
 ```
+
+### Pull Request Workflow
+
+**Core Principle: All changes to master via Pull Requests**
+
+**Never push directly to master**. Even small changes go through PR review.
+
+**Why PR-based workflow**:
+- Human approval required (maintain control)
+- Small, reviewable changes (easier to understand)
+- Clear history (what changed and why)
+- Rollback is simple (revert PR)
+- Prevents accidental breaking changes
+
+**Branch naming**:
+```
+feature/add-auth-system
+fix/doctor-script-crash
+docs/improve-quickstart
+refactor/simplify-validation
+chore/update-dependencies
+```
+
+**PR size guidelines**:
+- **Small**: < 200 lines changed (ideal)
+- **Medium**: 200-500 lines (acceptable)
+- **Large**: > 500 lines (break it up)
+
+**One PR = One Thing**:
+```
+Good: PR adds naming conventions to GUIDE.md
+Bad:  PR adds naming conventions + license + redesigns README
+
+Split into 3 PRs:
+1. Add naming conventions
+2. Add AGPL license
+3. Redesign README
+```
+
+**Review process**:
+1. AI creates branch + commits + pushes
+2. AI creates PR with clear description
+3. **Human reviews and approves** (required)
+4. Merge via GitHub UI
+5. Delete branch
+
+**For AI agents**: After creating PR, STOP and wait for human approval. Do not merge automatically.
 
 ### Pull Request Template
 

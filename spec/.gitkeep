@@ -1,0 +1,14 @@
+# Specifications Directory
+
+This directory contains formal specifications and strategy documents.
+
+Use this for:
+- Product strategy documents
+- API design specifications
+- Database schema documentation
+- Architecture decision records
+
+Keep in `.ai/` instead:
+- Working context for AI agents
+- Temporary task notes
+- Living documents that change frequently
