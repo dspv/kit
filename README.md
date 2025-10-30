@@ -50,7 +50,7 @@ Edit `.ai/context.md` with your product details, then `make dev`.
 
 ```bash
 # In your project directory:
-curl -sL https://github.com/dspv/kit/archive/main.tar.gz | tar xz --strip=1 kit-main
+curl -sL https://github.com/dspv/kit/archive/main.tar.gz | tar xz --strip=1
 ./doctor.sh                    # Check what needs fixing
 ```
 
