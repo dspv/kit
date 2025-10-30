@@ -1,65 +1,197 @@
-# Kit - AI-First Development Framework
+# DevKit - Development Standards for AI Agents
 
-**Status**: Ready for Use  
-**Version**: 3.0  
-**Type**: Universal starter + development guide  
+> Keep your repos clean, consistent, and AI-ready
 
-> Efficient project structure and development principles for AI-assisted development
+**Built for teams using Claude Code, Cursor, GitHub Copilot**
+
+---
+
+## The Problem
+
+You're building with AI agents. But every repo is different:
+- Some have Russian comments, some English
+- Documentation scattered across 20+ .md files
+- Old repos don't follow new standards
+- Manual copy-paste between projects wastes hours
+
+**Result**: Inconsistent quality. AI agents get confused. Code reviews focus on style, not logic.
+
+---
+
+## The Solution
+
+**DevKit = Your development standards as code**
+
+One framework that enforces:
+- English-only code and docs (pre-commit blocks violations)
+- Structured documentation (GUIDE.md + DOCS.md, not 50 scattered files)
+- Security checks (no hardcoded secrets)
+- AI-optimized context (designed for Claude/Cursor workflows)
+
+**Apply once. Works everywhere. Updates automatically.**
+
+---
 
 ## Quick Start
 
-### For New Projects
+### Option 1: New Project
+
 ```bash
-# 1. Copy kit to your project
-cp -r kit/ my-project/
-cd my-project/
-
-# 2. Initialize
-rm -rf .git/ && git init
-./doctor.sh
-
-# 3. Configure your project
-# Edit .ai/context.md with your product details
-# Edit .ai/tasks.md with initial tasks
-
-# 4. Start developing
-make dev
+# Use DevKit as template on GitHub, then:
+git clone your-new-repo
+cd your-new-repo
+./doctor.sh                    # Validate everything works
+make setup                     # Create project structure
 ```
 
-### For Existing Projects
-```bash
-# Copy only the guides and validation
-cp kit/GUIDE.md ./
-cp kit/DOCS.md ./
-cp kit/doctor.sh ./
-cp kit/Makefile ./
-mkdir -p .ai/
-cp kit/.ai/context.md ./.ai/
-cp kit/.ai/tasks.md ./.ai/
+Edit `.ai/context.md` with your product details, then `make dev`.
 
-# Run validation
-./doctor.sh
+### Option 2: Existing Project
+
+```bash
+# In your project directory:
+curl -sL https://github.com/dspv/devkit/archive/main.tar.gz | tar xz --strip=1
+./doctor.sh                    # Check what needs fixing
 ```
+
+DevKit validates your code, docs, and commits. Fix issues, then commit.
+
+### Option 3: Auto-Sync (Coming Soon)
+
+Add to `.github/workflows/devkit-sync.yml`:
+```yaml
+name: DevKit Sync
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly
+jobs:
+  sync:
+    uses: dspv/devkit/.github/workflows/sync.yml@main
+```
+
+Never manually update DevKit files again.
+
+---
+
+## What You Get
+
+### Free (Open Source)
+- **GUIDE.md** - Development principles and standards
+- **DOCS.md** - Living documentation template
+- **Pre-commit hooks** - Block non-English text, detect secrets
+- **doctor.sh** - Validate repo health anytime
+- **AI-optimized** - Context management for Claude Code/Cursor
+- **.ai/ templates** - Product context, task queue formats
+
+### Pro (Coming Q1 2026)
+- **GitHub Action** - Auto-sync Kit updates across all repos
+- **PR validation** - Check standards on every pull request
+- **Dashboard** - See compliance across all your projects
+- **Priority support** - Email response in 48 hours
+
+**Pricing**: $9/month per repo (first 5 repos), then $29/month unlimited
+
+[Join waitlist for 50% off first 3 months →](https://github.com/dspv/kit/discussions)
+
+---
+
+## How It Works
+
+DevKit enforces 4 core principles:
+
+### 1. English Only
+```bash
+# Pre-commit hook blocks this:
+git commit -m "добавил авторизацию"  # ❌ Cyrillic detected
+
+# Only accepts this:
+git commit -m "feat: add authentication"  # ✅ Passes
+```
+
+**Why**: AI models perform better. Global collaboration. Professional standard.
+
+### 2. Consolidated Documentation
+```
+Good (DevKit way):
+GUIDE.md           # Principles (read once, reference always)
+DOCS.md            # Implementation details (grows with project)
+
+Bad (scattered):
+auth.md, api.md, deploy.md, troubleshooting.md...
+```
+
+**Why**: Context pollution. AI wastes tokens loading 50 files. Humans can't find anything.
+
+### 3. Security by Default
+```bash
+./doctor.sh
+# Checks:
+# - No hardcoded API keys or passwords
+# - No secrets in environment files
+# - No .env committed
+```
+
+**Why**: Prevention better than cure. Catches mistakes before they ship.
+
+### 4. AI-Optimized Tasks
+```markdown
+Bad (step-by-step):
+- [ ] Create auth endpoint
+- [ ] Hash password with bcrypt
+- [ ] Return JWT token
+
+Good (outcome-focused):
+Goal: Users can register and login securely
+Success Metrics:
+- Auth response time < 200ms
+- Password hashing uses bcrypt cost >= 12
+- Rate limiting blocks brute force
+Freedom: Choose JWT vs session, token expiration policy
+```
+
+**Why**: Gives AI autonomy while ensuring quality. Based on Anthropic research.
+
+---
+
+## Use Cases
+
+**Indie Hacker with 5 Side Projects**
+Problem: Each repo has different standards. Some have Russian comments.
+Solution: Apply DevKit to all 5. Run `./doctor.sh` to catch issues.
+Result: Consistent quality. Updates sync automatically with GitHub Action.
+
+**Agency Building Client Projects**
+Problem: 20+ repos. Junior devs don't follow standards.
+Solution: DevKit Team tier with custom company rules.
+Result: All deliverables meet agency standards. Clients get professional code.
+
+**Startup Growing 3 → 30 Engineers**
+Problem: Early repos are messy. New hires ask "where are the guidelines?"
+Solution: DevKit enforces standards from day 1. GUIDE.md is single source of truth.
+Result: Faster onboarding. Code reviews focus on logic, not style.
+
+---
 
 ## What's Inside
 
-### Core Files
 ```
-kit/
-├── README.md          # This file - entry point
-├── GUIDE.md           # Development principles and standards
-├── DOCS.md            # Living documentation template
-├── Makefile           # Automation commands
-├── doctor.sh          # Project validation
-└── .ai/
-    ├── context.md     # Project context (what, why, for whom)
-    ├── tasks.md       # Task queue for AI agents
-    └── notes/         # Temporary working notes
+devkit/
+├── README.md          # This file
+├── GUIDE.md           # Development principles (English-only, context management, etc)
+├── DOCS.md            # Documentation template (grows with your project)
+├── Makefile           # Automation (make dev, make build, make deploy)
+├── doctor.sh          # Validation script (run anytime)
+├── .ai/
+│   ├── context.md     # Product context (what, why, for whom)
+│   ├── tasks.md       # Task queue for AI agents
+│   └── notes/         # Temporary working notes
+└── spec/              # Optional: formal specifications
 ```
 
-### Project Structure (Created on Setup)
+**Your project** (after `make setup`):
 ```
 your-project/
+├── DevKit files above # Standards and validation
 ├── apps/
 │   ├── api/           # Backend (Go by default)
 │   ├── ui/            # Frontend (TypeScript + React)
@@ -68,67 +200,7 @@ your-project/
 └── infra/             # Infrastructure as code
 ```
 
-## Documentation Flow
-
-### For Humans
-1. **README.md** - Start here, quick links, project status
-2. **GUIDE.md** - Read once, reference always (principles, standards)
-3. **DOCS.md** - Check for implementation details, grows with project
-4. **.ai/context.md** - Business context and goals
-
-### For AI Agents
-1. **README.md** - Entry point, understand project structure
-2. **GUIDE.md** - Read completely before starting development
-3. **.ai/context.md** - Understand what we're building and why
-4. **.ai/tasks.md** - Pick task, implement, update status
-5. **DOCS.md** - Document completed features here
-6. **.ai/notes/** - Use for temporary working notes during tasks
-
-## Commands
-
-```bash
-make help         # Show all available commands
-make setup        # Initialize project structure
-make dev          # Start development environment
-make check        # Run validation (doctor + lint + tests)
-make build        # Build all applications
-make deploy       # Deploy to production
-```
-
-## Key Principles
-
-### 1. English Only in Technical Content
-- All code, comments, commits, PRs must be in English
-- Pre-commit hook enforces this
-- Read GUIDE.md for details
-
-### 2. Consolidated Documentation
-- Use DOCS.md for permanent documentation
-- Use .ai/notes/ for temporary working notes
-- Don't create scattered .md files
-- Read GUIDE.md#documentation-management
-
-### 3. Autonomous AI Development
-- Tasks have goals and success metrics, not step-by-step instructions
-- AI has freedom to choose implementation approach
-- Focus on outcomes, not process
-- Read .ai/tasks.md for task format
-
-### 4. Context Management
-- Keep context lean (read GUIDE.md#context-management)
-- Use .ai/notes/ for working notes during tasks
-- Transfer important decisions to DOCS.md after completion
-- Clean .ai/notes/ regularly
-
-## Default Tech Stack
-
-**Backend/Workers**: Go (unless specified otherwise)  
-**Frontend**: TypeScript + React/Next.js  
-**Database**: PostgreSQL  
-**Cache**: Redis  
-**Infrastructure**: Docker + Kubernetes  
-
-Override defaults in .ai/context.md if needed.
+---
 
 ## Validation
 
@@ -137,25 +209,116 @@ Run health check anytime:
 ./doctor.sh
 ```
 
-Checks:
-- Required files present
-- English-only content (blocks non-English in technical files)
-- Proper commit message format
-- No hardcoded secrets
-- Project structure valid
+**Checks**:
+- ✅ Required files present (GUIDE.md, DOCS.md, .ai/context.md)
+- ✅ English-only content (blocks Cyrillic, Chinese, etc)
+- ✅ No emoji in technical files
+- ✅ Proper commit message format
+- ✅ No hardcoded secrets (API keys, passwords)
 
-## Current Project Status
-
-**Stage**: `template`  
-**Progress**: Ready for use  
-**Next**: Copy to your project and configure .ai/context.md  
+**Pre-commit hook** prevents bad commits:
+```bash
+git commit -m "добавил фичу"
+# ❌ Found non-English (Cyrillic) text
+# Please use English only in code and documentation
+```
 
 ---
 
-**Quick Links**:
-- [Development Guide](GUIDE.md) - Principles and standards
-- [Documentation](DOCS.md) - Implementation details
-- [Project Context](.ai/context.md) - What we're building
-- [Task Queue](.ai/tasks.md) - Development tasks
+## Default Tech Stack
 
-**Kit Version**: 3.0 | **Focus**: AI-First | **Complexity**: Minimal
+DevKit recommends (override in `.ai/context.md`):
+
+- **Backend**: Go (fast, simple deployment, strong typing)
+- **Frontend**: TypeScript + React/Next.js (type safety, SEO)
+- **Database**: PostgreSQL (relational data, ACID guarantees)
+- **Cache**: Redis (performance)
+- **Infrastructure**: Docker + Kubernetes (production-ready)
+
+**Not opinionated**. Use Python/Node/Rust if you prefer. DevKit works with any stack.
+
+---
+
+## Documentation
+
+- **[GUIDE.md](GUIDE.md)** - Read this first. Core principles and standards.
+- **[DOCS.md](DOCS.md)** - Template for your project documentation.
+- **[.ai/context.md](.ai/context.md)** - Product context format (fill with your details).
+- **[.ai/tasks.md](.ai/tasks.md)** - Task queue format for AI agents.
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and what changed.
+
+---
+
+## Roadmap
+
+**Q4 2025** (Current)
+- [x] DevKit v3.0 open-source release
+- [x] English-only enforcement
+- [x] File naming conventions
+- [x] PR-based workflow
+
+**Q1 2026**
+- [ ] GitHub Action (kit-sync) - free, auto-sync updates
+- [ ] Pro tier MVP ($9/mo per repo)
+- [ ] Dashboard (see compliance across all repos)
+
+**Q2 2026**
+- [ ] Team tier ($29/mo unlimited repos)
+- [ ] Custom company rules
+- [ ] Analytics and trends
+
+**Q3 2026**
+- [ ] Enterprise tier (self-hosted, SSO, SLA)
+- [ ] VS Code extension
+- [ ] API for integrations
+
+[Vote on features →](https://github.com/dspv/kit/discussions)
+
+---
+
+## FAQ
+
+**Is this really free?**
+Yes. AGPL-3.0 license. Use DevKit for any purpose, forever.
+
+**What do I pay for in Pro?**
+Automation. Free = manual setup/updates. Pro = auto-sync, dashboard, PR checks.
+
+**Can I customize the rules?**
+Free: Fork and modify (it's open source). Team tier: Customize via config.
+
+**Do I need Claude Code or Cursor?**
+No. DevKit works with any AI assistant (or none). Just optimized for AI workflows.
+
+**Will this slow me down?**
+Opposite. Faster development. No debates about "where should this doc go?" Clear standards = faster decisions.
+
+**What if GitHub builds this?**
+We're AI-specific. They're not. Plus we're faster and more opinionated.
+
+---
+
+## Community
+
+- **GitHub Discussions** - [Ask questions, share projects](https://github.com/dspv/kit/discussions)
+- **Issues** - [Report bugs, request features](https://github.com/dspv/kit/issues)
+- **Contributing** - [See CONTRIBUTING.md](CONTRIBUTING.md)
+
+**Show support**:
+```markdown
+[![Built with DevKit](https://img.shields.io/badge/built%20with-DevKit-blue)](https://github.com/dspv/devkit)
+```
+
+---
+
+## License
+
+**Open Source** (AGPL-3.0)
+Free to use, modify, distribute. Keep modifications open-source.
+
+**Pro Features** (Commercial)
+GitHub Action, dashboard, analytics require paid license.
+
+---
+
+**DevKit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/devkit)
