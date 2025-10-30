@@ -1,0 +1,84 @@
+# Kit AI-First v3.0 - .gitignore
+
+# Doctor report (generated)
+doctor-report.md
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Editor directories
+.vscode/
+.idea/
+*.sublime-*
+
+# Environment variables (keep .env.example)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+vendor/
+.npm/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+*.cover
+.coverage
+.pytest_cache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# AI working notes (optional - commit if needed)
+.ai/notes/*
+!.ai/notes/.gitkeep
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Language specific
+__pycache__/
+*.py[cod]
+*.class
+target/
+.gradle/
+
+# Docker
+docker-compose.override.yml
+
+# Kubernetes secrets
+*secret*.yaml
+*secret*.yml

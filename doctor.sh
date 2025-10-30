@@ -1,66 +1,50 @@
 #!/bin/bash
 
-# Doctor Script for Kit AI-First v2.0
-# Simplified validation focused on AI development needs
+# Doctor Script for Kit AI-First v3.0
+# Validation for AI development and code quality standards
 
 set -e
 
-echo "🩺 Doctor Script - Kit AI-First v2.0"
-echo "===================================="
+echo "Doctor Script - Kit AI-First v3.0"
+echo "=================================="
+echo ""
 
-# Colors for output
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Logging functions
-log_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
-}
+# Counters
+WARNINGS=0
+ERRORS=0
 
-log_success() {
-    echo -e "${GREEN}✅ $1${NC}"
-}
-
-log_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
-}
-
-log_error() {
-    echo -e "${RED}❌ $1${NC}"
-}
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[OK]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[WARN]${NC} $1"; ((WARNINGS++)); }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; ((ERRORS++)); }
 
 # Check required files
 check_required_files() {
     log_info "Checking required files..."
     
-    local required_files=(
+    local required=(
         "README.md"
+        "GUIDE.md"
+        "DOCS.md"
         "Makefile"
-        "spec/product.md"
-        "spec/roadmap.md"
+        ".ai/context.md"
+        ".ai/tasks.md"
     )
     
-    local missing_files=()
-    
-    for file in "${required_files[@]}"; do
+    for file in "${required[@]}"; do
         if [[ -f "$file" ]]; then
-            log_success "$file found"
+            log_success "$file exists"
         else
             log_error "$file missing"
-            missing_files+=("$file")
         fi
     done
-    
-    if [[ ${#missing_files[@]} -gt 0 ]]; then
-        log_error "Missing required files: ${missing_files[*]}"
-        log_info "Run 'make setup' to initialize project structure"
-        return 1
-    fi
-    
-    log_success "All required files present"
 }
 
 # Check directory structure
@@ -68,8 +52,8 @@ check_directory_structure() {
     log_info "Checking directory structure..."
     
     local required_dirs=(
-        "spec"
-        "apps"
+        ".ai"
+        ".ai/notes"
     )
     
     for dir in "${required_dirs[@]}"; do
@@ -82,39 +66,172 @@ check_directory_structure() {
     done
 }
 
-# Check for English-only content
+# Check for English-only content (STRICT - blocks non-English)
 check_english_only() {
-    log_info "Checking for English-only content..."
+    log_info "Checking English-only requirement..."
     
-    local non_english_files=()
+    local violations=()
     
-    # Check markdown files for non-English text
+    # Check markdown files for Cyrillic (excluding box-drawing chars)
     while IFS= read -r -d '' file; do
-        # Check for Cyrillic, Chinese, Japanese, Arabic, etc.
-        if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
-            non_english_files+=("$file")
-            log_warning "$file contains non-English text"
+        # Use perl with explicit Unicode range U+0400-U+04FF (Cyrillic block)
+        # This avoids false positives from box-drawing characters
+        if perl -ne 'exit 1 if /[\x{0400}-\x{04FF}]/' "$file" 2>/dev/null; then
+            : # No Cyrillic found
+        else
+            violations+=("$file")
+            log_error "Non-English (Cyrillic) text in: $file"
         fi
-    done < <(find . -name "*.md" -type f -not -path "./.git/*" -print0 2>/dev/null)
+    done < <(find . -name "*.md" -type f \
+        -not -path "./.git/*" \
+        -not -path "./node_modules/*" \
+        -not -path "./vendor/*" \
+        -print0 2>/dev/null)
     
-    # Check code files for non-English comments
-    local code_extensions=("*.js" "*.ts" "*.jsx" "*.tsx" "*.go" "*.py" "*.java" "*.cpp" "*.c" "*.h" "*.cs" "*.php" "*.rb" "*.rs" "*.swift" "*.kt")
+    # Check code files for Cyrillic in comments/strings
+    local code_exts=("*.go" "*.js" "*.ts" "*.jsx" "*.tsx" "*.py" "*.java" "*.c" "*.cpp" "*.h" "*.rs" "*.swift" "*.kt")
     
-    for ext in "${code_extensions[@]}"; do
+    for ext in "${code_exts[@]}"; do
         while IFS= read -r -d '' file; do
-            # Check for non-English comments
-            if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
-                non_english_files+=("$file")
-                log_warning "$file has non-English comments"
+            # Use explicit Unicode range to avoid false positives
+            if perl -ne 'exit 1 if /[\x{0400}-\x{04FF}]/' "$file" 2>/dev/null; then
+                : # No Cyrillic found
+            else
+                violations+=("$file")
+                log_error "Non-English (Cyrillic) in code: $file"
             fi
-        done < <(find . -name "$ext" -type f -not -path "./.git/*" -not -path "./node_modules/*" -not -path "./vendor/*" -print0 2>/dev/null)
+        done < <(find . -name "$ext" -type f \
+            -not -path "./.git/*" \
+            -not -path "./node_modules/*" \
+            -not -path "./vendor/*" \
+            -not -path "./dist/*" \
+            -not -path "./build/*" \
+            -print0 2>/dev/null)
     done
     
-    if [[ ${#non_english_files[@]} -eq 0 ]]; then
-        log_success "All files use English text"
+    if [[ ${#violations[@]} -eq 0 ]]; then
+        log_success "All technical content is in English"
     else
-        log_warning "Found ${#non_english_files[@]} files with non-English text"
-        log_info "Consider translating to English for consistency"
+        log_error "Found ${#violations[@]} files with non-English content"
+        log_error "CRITICAL: All technical content MUST be in English"
+        log_error "This includes: code, comments, commits, PRs, docs"
+    fi
+}
+
+# Check for emoji in technical files (WARNING only)
+check_emoji_usage() {
+    log_info "Checking emoji usage in technical files..."
+    
+    local emoji_files=()
+    
+    # Check code files for common emoji
+    local code_exts=("*.go" "*.js" "*.ts" "*.jsx" "*.tsx" "*.py" "*.java" "*.sh")
+    
+    for ext in "${code_exts[@]}"; do
+        while IFS= read -r -d '' file; do
+            # Simple check for common emoji ranges (not comprehensive but catches most)
+            if grep -P '[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]' "$file" 2>/dev/null; then
+                emoji_files+=("$file")
+            fi
+        done < <(find . -name "$ext" -type f \
+            -not -path "./.git/*" \
+            -not -path "./node_modules/*" \
+            -not -path "./vendor/*" \
+            -print0 2>/dev/null)
+    done
+    
+    # Check recent commit messages for emoji
+    if [[ -d .git ]]; then
+        local emoji_commits=$(git log -10 --oneline 2>/dev/null | grep -P '[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]' || true)
+        
+        if [[ -n "$emoji_commits" ]]; then
+            log_warning "Emoji found in recent commits (not recommended)"
+            log_info "Use clear text instead of emoji in technical content"
+        fi
+    fi
+    
+    if [[ ${#emoji_files[@]} -eq 0 ]]; then
+        log_success "No emoji in technical files"
+    else
+        log_warning "Found emoji in ${#emoji_files[@]} technical files"
+        log_info "Recommendation: Use Heroicons for UI, clear text for technical content"
+    fi
+}
+
+# Check commit message format
+check_commit_format() {
+    if [[ ! -d .git ]]; then
+        log_info "Not a git repository, skipping commit checks"
+        return
+    fi
+    
+    log_info "Checking commit message format..."
+    
+    local bad_commits=()
+    local commit_count=0
+    
+    while IFS= read -r commit; do
+        ((commit_count++))
+        local hash=$(echo "$commit" | awk '{print $1}')
+        local message=$(echo "$commit" | cut -d' ' -f2-)
+        
+        # Check for proper format: "type: description"
+        if ! echo "$message" | grep -qE '^(feat|fix|docs|refactor|test|chore|style|perf):'; then
+            bad_commits+=("$hash: $message")
+        fi
+    done < <(git log -5 --oneline 2>/dev/null || true)
+    
+    if [[ $commit_count -eq 0 ]]; then
+        log_info "No commits yet"
+        return
+    fi
+    
+    if [[ ${#bad_commits[@]} -eq 0 ]]; then
+        log_success "Commit messages follow format"
+    else
+        log_warning "Found ${#bad_commits[@]} commits not following format:"
+        for commit in "${bad_commits[@]}"; do
+            echo "  $commit"
+        done
+        log_info "Use format: <type>: <description>"
+        log_info "Types: feat, fix, docs, refactor, test, chore, style, perf"
+    fi
+}
+
+# Check for hardcoded secrets
+check_secrets() {
+    log_info "Checking for hardcoded secrets..."
+    
+    local secret_patterns=(
+        "password\s*=\s*['\"][^'\"]{8,}['\"]"
+        "api[_-]?key\s*=\s*['\"][^'\"]{8,}['\"]"
+        "secret\s*=\s*['\"][^'\"]{8,}['\"]"
+        "token\s*=\s*['\"][^'\"]{8,}['\"]"
+    )
+    
+    local violations=()
+    
+    for pattern in "${secret_patterns[@]}"; do
+        while IFS= read -r -d '' file; do
+            if grep -iE "$pattern" "$file" 2>/dev/null | grep -v "example" | grep -v "TODO" | grep -v "FIXME" | grep -v "placeholder" > /dev/null; then
+                violations+=("$file")
+            fi
+        done < <(find . -type f \
+            \( -name "*.go" -o -name "*.js" -o -name "*.ts" -o -name "*.tsx" -o -name "*.jsx" -o -name "*.py" -o -name "*.env" \) \
+            -not -path "./.git/*" \
+            -not -path "./node_modules/*" \
+            -not -path "./vendor/*" \
+            -not -name "*.example*" \
+            -not -name ".env.example" \
+            -print0 2>/dev/null)
+    done
+    
+    if [[ ${#violations[@]} -eq 0 ]]; then
+        log_success "No obvious hardcoded secrets detected"
+    else
+        log_warning "Possible hardcoded secrets in:"
+        printf '%s\n' "${violations[@]}" | sort -u
+        log_info "Use environment variables for sensitive data"
     fi
 }
 
@@ -123,226 +240,176 @@ check_readme_status() {
     log_info "Checking README status indicators..."
     
     if [[ ! -f "README.md" ]]; then
-        log_warning "README.md not found"
-        return 0
+        log_error "README.md not found"
+        return
     fi
     
     local has_status=false
-    local has_progress=false
-    local has_timeline=false
-    local has_focus=false
+    local has_version=false
     
-    # Check for status indicators
-    if grep -q -E "🚀.*[Ss]tatus.*:" README.md; then
+    if grep -q "Status:" README.md; then
         has_status=true
         log_success "README has status indicator"
-    fi
-    
-    if grep -q -E "Progress.*░" README.md; then
-        has_progress=true
-        log_success "README has progress bars"
-    fi
-    
-    if grep -q -E "📅.*[Tt]imeline.*:" README.md; then
-        has_timeline=true
-        log_success "README has timeline indicator"
-    fi
-    
-    if grep -q -E "🎯.*[Ff]ocus.*:" README.md; then
-        has_focus=true
-        log_success "README has focus indicator"
-    fi
-    
-    if [[ "$has_status" == true && "$has_progress" == true && "$has_timeline" == true && "$has_focus" == true ]]; then
-        log_success "README has all required status indicators"
     else
-        log_warning "README missing some status indicators"
-        log_info "Add: 🚀 Status: | Progress: ░░░░░░░░░░ | 📅 Timeline: | 🎯 Focus:"
-    fi
-}
-
-# Check roadmap task structure
-check_roadmap_tasks() {
-    log_info "Checking roadmap task structure..."
-    
-    if [[ ! -f "spec/roadmap.md" ]]; then
-        log_warning "spec/roadmap.md not found"
-        return 0
+        log_warning "README missing status indicator"
     fi
     
-    local has_tasks=false
-    local has_priorities=false
-    local has_status=false
-    
-    # Check for task structure
-    if grep -q "TASK-" spec/roadmap.md; then
-        has_tasks=true
-        log_success "Roadmap has structured tasks"
-    fi
-    
-    if grep -q -E "🔴|🟡|🟢" spec/roadmap.md; then
-        has_priorities=true
-        log_success "Roadmap has priority indicators"
-    fi
-    
-    if grep -q -E "\`(todo|doing|done|blocked)\`" spec/roadmap.md; then
-        has_status=true
-        log_success "Roadmap has task status indicators"
-    fi
-    
-    if [[ "$has_tasks" == true && "$has_priorities" == true && "$has_status" == true ]]; then
-        log_success "Roadmap has proper AI task structure"
+    if grep -q "Version:" README.md; then
+        has_version=true
+        log_success "README has version indicator"
     else
-        log_warning "Roadmap missing AI-friendly task structure"
-        log_info "Tasks should have: TASK-XXX format, priority colors, status indicators"
+        log_warning "README missing version indicator"
     fi
 }
 
-# Check project stage
-check_project_stage() {
-    log_info "Checking project stage configuration..."
-    
-    if [[ -f "spec/roadmap.md" ]]; then
-        if grep -q "Stage.*dev" spec/roadmap.md; then
-            log_info "Stage: dev (fast iterations, direct commits)"
-        elif grep -q "Stage.*prod" spec/roadmap.md; then
-            log_info "Stage: prod (pull requests, code review)"
-        else
-            log_warning "Stage not clearly defined in roadmap.md"
-            log_info "Add: Stage: dev or Stage: prod"
-        fi
+# Setup git hooks
+setup_git_hooks() {
+    if [[ ! -d .git ]]; then
+        return
     fi
-}
-
-# Check git configuration
-check_git_setup() {
-    log_info "Checking git configuration..."
     
-    if [[ -d ".git" ]]; then
-        # Check for commit template
-        if git config --get commit.template >/dev/null 2>&1; then
-            log_success "Git commit template configured"
-        else
-            log_warning "Git commit template not configured"
-        fi
-        
-        # Check for pre-commit hook
-        if [[ -f ".git/hooks/pre-commit" ]]; then
-            log_success "Pre-commit hook exists"
-        else
-            log_info "Creating simple pre-commit hook..."
-            cat > ".git/hooks/pre-commit" << 'EOF'
+    log_info "Setting up git hooks..."
+    
+    # Pre-commit hook
+    cat > ".git/hooks/pre-commit" << 'HOOK_EOF'
 #!/bin/bash
-# Simple pre-commit hook for Kit AI-First v2.0
+# Pre-commit hook - Kit AI-First v3.0
 
-echo "🔍 Pre-commit checks..."
+echo "[Pre-commit] Running validation checks..."
 
-# Check for non-English text in staged files
-staged_files=$(git diff --cached --name-only | grep -E '\.(md|js|ts|jsx|tsx|go|py)$' || true)
+# Get staged files
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
 
-if [ -n "$staged_files" ]; then
-    non_english_found=false
-    
-    for file in $staged_files; do
-        if [ -f "$file" ]; then
-            if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
-                echo "❌ Found non-English (Cyrillic) text in: $file"
-                non_english_found=true
-            fi
+# Check for Cyrillic (non-English) content - BLOCKS commit
+non_english_found=false
+for file in $staged_files; do
+    if [[ -f "$file" ]] && [[ "$file" =~ \.(md|go|js|ts|jsx|tsx|py|java|sh)$ ]]; then
+        if grep -q '[а-яёА-ЯЁ]' "$file" 2>/dev/null; then
+            echo "[ERROR] Non-English (Cyrillic) text found in: $file"
+            non_english_found=true
         fi
-    done
+    fi
+done
+
+if [ "$non_english_found" = true ]; then
+    echo "[BLOCK] Commit blocked: All technical content must be in English"
+    echo "[INFO] This includes: code, comments, documentation"
+    echo "[INFO] Edit the files above to use English only"
+    exit 1
+fi
+
+# Check for emoji in technical files - WARNING only
+emoji_found=false
+for file in $staged_files; do
+    if [[ -f "$file" ]] && [[ "$file" =~ \.(go|js|ts|jsx|tsx|py|java|sh)$ ]]; then
+        if grep -P '[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]' "$file" 2>/dev/null; then
+            echo "[WARN] Emoji found in: $file (not recommended)"
+            emoji_found=true
+        fi
+    fi
+done
+
+if [ "$emoji_found" = true ]; then
+    echo "[INFO] Consider using Heroicons for UI or clear text instead"
+fi
+
+# Check commit message format (from stdin via git)
+commit_msg=$(cat "$1" 2>/dev/null || echo "")
+
+if [[ -n "$commit_msg" ]]; then
+    # Check first line for proper format
+    first_line=$(echo "$commit_msg" | head -n1)
     
-    if [ "$non_english_found" = true ]; then
-        echo "ℹ️  Please use English only in code and documentation"
+    if ! echo "$first_line" | grep -qE '^(feat|fix|docs|refactor|test|chore|style|perf):'; then
+        echo "[WARN] Commit message should follow format: <type>: <description>"
+        echo "[INFO] Types: feat, fix, docs, refactor, test, chore, style, perf"
+    fi
+    
+    # Check for Cyrillic in commit message
+    if echo "$commit_msg" | grep -q '[а-яёА-ЯЁ]'; then
+        echo "[ERROR] Non-English text in commit message"
+        echo "[BLOCK] Commit message must be in English"
         exit 1
     fi
 fi
 
-echo "✅ Pre-commit checks passed"
-EOF
-            chmod +x ".git/hooks/pre-commit"
-            log_success "Created pre-commit hook for English-only validation"
-        fi
-    else
-        log_warning "Not a git repository"
-    fi
+echo "[Pre-commit] All checks passed"
+HOOK_EOF
+    
+    chmod +x ".git/hooks/pre-commit"
+    log_success "Git hooks installed (pre-commit)"
 }
 
-# Generate simple report
+# Generate health report
 generate_report() {
     log_info "Generating health report..."
     
     local report_file="doctor-report.md"
-    local current_date=$(date '+%Y-%m-%d %H:%M:%S')
     
     cat > "$report_file" << EOF
-# Doctor Report - Kit AI-First v2.0
+# Doctor Health Report
 
-**Date**: $current_date  
-**Kit Version**: 2.0 (AI-First)
+**Date**: $(date '+%Y-%m-%d %H:%M:%S')  
+**Kit Version**: 3.0  
 
-## Health Check Status
+## Summary
 
-- ✅ Required files present
-- ✅ Directory structure valid
-- ✅ English-only content validated
-- ✅ README status indicators checked
-- ✅ Roadmap task structure verified
-- ✅ Git configuration checked
+- **Warnings**: $WARNINGS
+- **Errors**: $ERRORS
+- **Status**: $([ $ERRORS -eq 0 ] && echo "PASS" || echo "FAIL")
 
-## Project Status
+## Checks Performed
 
-$(if [[ -f "README.md" ]]; then
-    echo "### Current Status"
-    grep -E "🚀.*Status:|Progress:|📅.*Timeline:|🎯.*Focus:" README.md | head -4 || echo "Status indicators not found"
-fi)
+- [x] Required files present
+- [x] Directory structure valid
+- [x] English-only content (CRITICAL)
+- [x] Emoji usage check (recommendation)
+- [x] Commit message format
+- [x] Hardcoded secrets scan
+- [x] README status indicators
 
-$(if [[ -f "spec/roadmap.md" ]]; then
-    echo "### Active Tasks"
-    grep -E "TASK-.*\`(todo|doing)\`" spec/roadmap.md | head -3 || echo "No active tasks found"
-fi)
+## Critical Issues
+
+$([ $ERRORS -eq 0 ] && echo "No critical issues found" || echo "Found $ERRORS critical issues - see above")
 
 ## Recommendations
 
-$(if [[ ! -f "docker-compose.yml" ]]; then
-    echo "- Add docker-compose.yml for local development"
-fi)
-
-$(if [[ ! -f ".env.example" ]]; then
-    echo "- Add .env.example with required environment variables"
-fi)
+$([ $WARNINGS -gt 0 ] && echo "- Review $WARNINGS warnings above for code quality improvements" || echo "- All checks passed")
 
 ## Next Steps
 
-1. Update placeholders in README.md and spec/ files
-2. Configure project-specific settings
-3. Start development with 'make dev'
+1. Fix any errors (blocks development)
+2. Review warnings (quality improvements)
+3. Run 'make validate' for full validation
+4. Start development with 'make dev'
 
 ---
 
-**Kit AI-First v2.0** | **Files**: 5 | **Complexity**: Minimal
+**Kit AI-First v3.0**  
+**Language**: English Only  
+**Emoji**: Recommended to avoid in technical content
 EOF
     
     log_success "Report saved to $report_file"
 }
 
-# Main function
+# Main execution
 main() {
-    local quick_mode=false
+    local setup_hooks=false
     
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --quick)
-                quick_mode=true
+            --setup-hooks)
+                setup_hooks=true
                 shift
                 ;;
             --help|-h)
-                echo "Usage: $0 [--quick] [--help]"
+                echo "Usage: $0 [--setup-hooks] [--help]"
                 echo ""
                 echo "Options:"
-                echo "  --quick       Quick validation (skip detailed checks)"
-                echo "  --help, -h    Show this help"
+                echo "  --setup-hooks   Install git pre-commit hooks"
+                echo "  --help, -h      Show this help"
                 exit 0
                 ;;
             *)
@@ -357,25 +424,50 @@ main() {
     # Run checks
     check_directory_structure
     check_required_files
+    echo ""
+    check_english_only
+    echo ""
+    check_emoji_usage
+    echo ""
+    check_commit_format
+    echo ""
+    check_secrets
+    echo ""
+    check_readme_status
+    echo ""
     
-    if [[ "$quick_mode" == false ]]; then
-        check_english_only
-        check_readme_status
-        check_roadmap_tasks
-        check_project_stage
-        check_git_setup
-        generate_report
+    if [[ "$setup_hooks" == true ]] || [[ ! -f .git/hooks/pre-commit ]]; then
+        setup_git_hooks
+        echo ""
+    fi
+    
+    generate_report
+    
+    echo ""
+    echo "=================================="
+    echo "Warnings: $WARNINGS | Errors: $ERRORS"
+    echo ""
+    
+    if [[ $ERRORS -gt 0 ]]; then
+        echo -e "${RED}[FAIL]${NC} Fix errors before proceeding"
+        echo ""
+        echo "Common fixes:"
+        echo "  - Translate non-English text to English"
+        echo "  - Move secrets to environment variables"
+        echo "  - Add missing required files"
+        exit 1
+    elif [[ $WARNINGS -gt 0 ]]; then
+        echo -e "${YELLOW}[PASS with warnings]${NC} Consider addressing warnings"
+        echo ""
+        echo "Warnings are recommendations for code quality"
+    else
+        echo -e "${GREEN}[PASS]${NC} All checks successful"
     fi
     
     echo ""
-    log_success "Doctor script completed successfully!"
-    
-    if [[ "$quick_mode" == false ]]; then
-        echo ""
-        log_info "💡 Run './doctor.sh --quick' for fast validation"
-        log_info "💡 Run 'make help' to see available commands"
-    fi
+    log_info "Run 'make help' to see available commands"
+    log_info "Run 'make validate' for full validation with linting"
 }
 
-# Run
+# Execute
 main "$@"

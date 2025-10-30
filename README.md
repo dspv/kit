@@ -1,197 +1,161 @@
-# Kit AI-First v2.0 - Minimal Development Template
+# Kit - AI-First Development Framework
 
-🚀 **Status**: Template Ready (100%)  
-📅 **Timeline**: Ready for Use  
-🎯 **Focus**: AI-First Development Structure  
+**Status**: Ready for Use  
+**Version**: 3.0  
+**Type**: Universal starter + development guide  
 
-> **Single Entry Point** for both humans and AI agents
+> Efficient project structure and development principles for AI-assisted development
 
-## 🤖 For AI Agents - Start Here
+## Quick Start
 
-### Critical Instructions
-1. **Always read files in order**: README.md → spec/product.md → spec/roadmap.md
-2. **Update progress daily**: Modify progress bars in README.md after each task
-3. **Follow stage rules**: Check current stage in spec/roadmap.md
-4. **English only**: All code, comments, commits, documentation
-5. **Small iterations**: Commit working code frequently with clear descriptions
-
-### Quick Start Commands
+### For New Projects
 ```bash
-make setup    # Initialize project
-make dev      # Start development
-make check    # Validate everything
-```
-
-### Current Project Status
-**Stage**: `dev` (fast iterations) | `prod` (strict rules)  
-**Progress**: ░░░░░░░░░░ 0%  
-**Active Tasks**: See spec/roadmap.md  
-
-## 📦 What's Inside
-
-### Core Files (5 total)
-- **README.md** (this file) - Project status and entry point
-- **Makefile** - Development automation
-- **doctor.sh** - Structure validation and health checks
-- **spec/product.md** - What we build + business context
-- **spec/roadmap.md** - Development plan + AI task queue
-
-### Project Structure Template
-```
-project/
-├── README.md              # Status and entry point
-├── Makefile               # Automation
-├── doctor.sh              # Validation
-├── spec/
-│   ├── product.md         # Business requirements
-│   └── roadmap.md         # Development plan
-├── apps/                  # Applications
-│   ├── api/               # Backend service
-│   ├── ui/                # Frontend application
-│   └── worker/            # Background jobs
-├── libs/                  # Shared code
-└── infra/                 # Infrastructure configs
-```
-
-## 🚀 Quick Start
-
-### 1. Copy Template
-```bash
+# 1. Copy kit to your project
 cp -r kit/ my-project/
 cd my-project/
-rm -rf .git/
-git init
-```
 
-### 2. Configure Project
-```bash
-# Run validation
+# 2. Initialize
+rm -rf .git/ && git init
 ./doctor.sh
 
-# Replace placeholders
-sed -i 's/\[Project Name\]/My Project/g' *.md spec/*.md
-sed -i 's/\[Description\]/AI-powered app/g' *.md spec/*.md
-```
+# 3. Configure your project
+# Edit .ai/context.md with your product details
+# Edit .ai/tasks.md with initial tasks
 
-### 3. Start Development
-```bash
-# Setup project structure
-make setup
-
-# Start development
+# 4. Start developing
 make dev
-
-# Validate progress
-make check
 ```
 
-## 🎯 Development Stages
+### For Existing Projects
+```bash
+# Copy only the guides and validation
+cp kit/GUIDE.md ./
+cp kit/DOCS.md ./
+cp kit/doctor.sh ./
+cp kit/Makefile ./
+mkdir -p .ai/
+cp kit/.ai/context.md ./.ai/
+cp kit/.ai/tasks.md ./.ai/
 
-### Stage: `dev` (Default)
-- ✅ Direct commits to main
-- ✅ Fast iterations
-- ✅ Basic validation only
-- 🎯 **Goal**: Get working prototype quickly
-
-### Stage: `prod` (When ready)
-- ✅ Pull requests required
-- ✅ Code review mandatory
-- ✅ Full testing pipeline
-- 🎯 **Goal**: Production-ready quality
-
-**Switch stages**: Update `stage: dev/prod` in spec/roadmap.md
-
-## 🤖 AI Agent Guidelines
-
-### Task Selection
-1. Read spec/roadmap.md for current tasks
-2. Pick highest priority available task
-3. Update task status: `todo` → `doing` → `done`
-4. Update README.md progress after completion
-
-### Commit Format
-```
-feat: brief description
-
-- what was implemented
-- what was tested
-- what's next
-
-Stage: dev | Progress: 25% → 30%
+# Run validation
+./doctor.sh
 ```
 
-### Quality Standards
-- **English only**: Code, comments, docs, commits
-- **Working code**: Always commit functional increments
-- **Clear progress**: Update status bars after each task
-- **Small changes**: 1-3 files per commit maximum
+## What's Inside
 
-## 📊 Progress Tracking
+### Core Files
+```
+kit/
+├── README.md          # This file - entry point
+├── GUIDE.md           # Development principles and standards
+├── DOCS.md            # Living documentation template
+├── Makefile           # Automation commands
+├── doctor.sh          # Project validation
+└── .ai/
+    ├── context.md     # Project context (what, why, for whom)
+    ├── tasks.md       # Task queue for AI agents
+    └── notes/         # Temporary working notes
+```
 
-### Overall Progress
-**Project**: [Project Name]  
-**Completion**: ░░░░░░░░░░ 0%  
-**Timeline**: Week 0/[X]  
-**Focus**: [Current work area]  
+### Project Structure (Created on Setup)
+```
+your-project/
+├── apps/
+│   ├── api/           # Backend (Go by default)
+│   ├── ui/            # Frontend (TypeScript + React)
+│   └── worker/        # Background jobs
+├── libs/              # Shared libraries
+└── infra/             # Infrastructure as code
+```
 
-### Feature Status
-| Feature | Progress | Status | Owner |
-|---------|----------|--------|-------|
-| [Feature 1] | ░░░░░░░░░░ 0% | todo | AI |
-| [Feature 2] | ░░░░░░░░░░ 0% | todo | AI |
+## Documentation Flow
 
-**Update this section daily**
+### For Humans
+1. **README.md** - Start here, quick links, project status
+2. **GUIDE.md** - Read once, reference always (principles, standards)
+3. **DOCS.md** - Check for implementation details, grows with project
+4. **.ai/context.md** - Business context and goals
 
-## 🔧 Available Commands
+### For AI Agents
+1. **README.md** - Entry point, understand project structure
+2. **GUIDE.md** - Read completely before starting development
+3. **.ai/context.md** - Understand what we're building and why
+4. **.ai/tasks.md** - Pick task, implement, update status
+5. **DOCS.md** - Document completed features here
+6. **.ai/notes/** - Use for temporary working notes during tasks
+
+## Commands
 
 ```bash
-make help         # Show all commands
+make help         # Show all available commands
 make setup        # Initialize project structure
 make dev          # Start development environment
-make test         # Run all tests
-make lint         # Check code quality
+make check        # Run validation (doctor + lint + tests)
 make build        # Build all applications
-make deploy       # Deploy to staging/production
-make clean        # Clean generated files
-make check        # Full project validation
+make deploy       # Deploy to production
 ```
 
-## 📝 File Update Rules
+## Key Principles
 
-### Daily Updates Required
-- **Progress bars**: Update ░░░▓▓▓░░░░ after each completed task
-- **Feature status**: Change todo → doing → done
-- **Timeline**: Update current week/phase
-- **Focus**: Update current work area
+### 1. English Only in Technical Content
+- All code, comments, commits, PRs must be in English
+- Pre-commit hook enforces this
+- Read GUIDE.md for details
 
-### Weekly Updates Required
-- **Overall completion**: Recalculate total progress
-- **Blockers**: Add/remove current blockers
-- **Next week**: Plan upcoming tasks
+### 2. Consolidated Documentation
+- Use DOCS.md for permanent documentation
+- Use .ai/notes/ for temporary working notes
+- Don't create scattered .md files
+- Read GUIDE.md#documentation-management
 
-## 🚨 Critical Rules for AI
+### 3. Autonomous AI Development
+- Tasks have goals and success metrics, not step-by-step instructions
+- AI has freedom to choose implementation approach
+- Focus on outcomes, not process
+- Read .ai/tasks.md for task format
 
-### Must Do
-- ✅ Read spec/ files before starting work
-- ✅ Update progress after each task
-- ✅ Commit working code only
-- ✅ Use English everywhere
-- ✅ Follow stage rules (dev/prod)
+### 4. Context Management
+- Keep context lean (read GUIDE.md#context-management)
+- Use .ai/notes/ for working notes during tasks
+- Transfer important decisions to DOCS.md after completion
+- Clean .ai/notes/ regularly
 
-### Never Do
-- ❌ Commit broken code
-- ❌ Use non-English text
-- ❌ Skip progress updates
-- ❌ Work without reading specs
-- ❌ Make large changes without commits
+## Default Tech Stack
 
-## 🔗 Next Steps
+**Backend/Workers**: Go (unless specified otherwise)  
+**Frontend**: TypeScript + React/Next.js  
+**Database**: PostgreSQL  
+**Cache**: Redis  
+**Infrastructure**: Docker + Kubernetes  
 
-1. **Read**: spec/product.md (business context)
-2. **Plan**: spec/roadmap.md (development tasks)
-3. **Start**: Pick first task from roadmap
-4. **Update**: Progress bars after each completion
+Override defaults in .ai/context.md if needed.
+
+## Validation
+
+Run health check anytime:
+```bash
+./doctor.sh
+```
+
+Checks:
+- Required files present
+- English-only content (blocks non-English in technical files)
+- Proper commit message format
+- No hardcoded secrets
+- Project structure valid
+
+## Current Project Status
+
+**Stage**: `template`  
+**Progress**: Ready for use  
+**Next**: Copy to your project and configure .ai/context.md  
 
 ---
 
-**Kit Version**: 2.0 | **Type**: AI-First | **Files**: 5 | **Complexity**: Minimal
+**Quick Links**:
+- [Development Guide](GUIDE.md) - Principles and standards
+- [Documentation](DOCS.md) - Implementation details
+- [Project Context](.ai/context.md) - What we're building
+- [Task Queue](.ai/tasks.md) - Development tasks
+
+**Kit Version**: 3.0 | **Focus**: AI-First | **Complexity**: Minimal
