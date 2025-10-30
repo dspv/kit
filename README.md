@@ -326,6 +326,59 @@ We're AI-specific. They're not. Plus we're faster and more opinionated.
 
 ---
 
+## Built On
+
+DevKit synthesizes best practices from leading AI development research and proven open-source patterns.
+
+### Research & Methodology
+
+**[Anthropic Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)** (2025)
+- Token budget optimization (cached vs uncached = 10x cost difference)
+- Progressive exploration (Just-In-Time context loading)
+- Minimal tool sets (avoid ambiguous function names)
+- Auto-compact strategy at 95% context window
+
+**[Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
+- Repository-specific rules (.claude.md pattern)
+- File system as external memory
+- Strong type signatures for AI comprehension
+- Tests as living documentation
+
+**[AGENTS.md Standard](https://www.infoq.com/news/2025/08/agents-md/)**
+- AI-specific documentation format
+- 20,000+ repositories adoption
+- Predictable structure for agent instructions
+
+### Core Principles
+
+**English-Only Enforcement**
+- AI models perform 20-30% better with consistent language
+- Global collaboration standard
+- Pre-commit hooks block violations
+
+**Consolidated Documentation**
+- One DOCS.md instead of scattered .md files
+- Reduces context pollution
+- Prevents "where did I document X?" confusion
+
+**Heuristics Over Algorithms**
+- Give AI reasoning framework, not step-by-step instructions
+- Based on Anthropic prompt engineering research
+- Allows AI autonomy while ensuring quality
+
+**Security by Default**
+- Pre-commit validation catches secrets before they ship
+- English-only makes audits easier
+- Prevention better than remediation
+
+### Inspired By
+
+**[Dependabot](https://github.com/dependabot)** - Auto-sync dependency updates
+**[Renovate](https://github.com/renovatebot/renovate)** - Flexible bot-driven updates
+**[GitHub Code Security](https://github.com/features/security)** - Built into workflow
+
+---
+
 ## Community
 
 - **GitHub Discussions** - [Ask questions, share projects](https://github.com/dspv/kit/discussions)
