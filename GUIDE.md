@@ -26,22 +26,36 @@
 
 **Context is a finite resource**. Every token in the context window reduces the model's attention budget.
 
+**Token Economics** (2025):
+- Cached tokens: $0.30 per million tokens (cheap)
+- Uncached tokens: $3.00 per million tokens (10x more expensive)
+- Context window at 95%: Model performance degrades ("context rot")
+
+**Think of tokens as money**: Would you spend $3 to read a 50,000 line file when grep can find the answer in one line for $0.001?
+
 **Apply this by**:
 - Loading only files you actively need to modify
 - Using grep/search to find specific patterns before reading full files
 - Checking git diff to see recent changes instead of re-reading entire files
 - Keeping temporary notes in .ai/notes/ and cleaning them regularly
+- Using file system as external memory (unlimited, persistent, directly operable)
 
 **Example workflow**:
 ```bash
-# Bad: Load everything
+# Bad: Load everything ($$$, slow, pollutes context)
 cat apps/api/internal/**/*.go
 
-# Good: Progressive exploration
+# Good: Progressive exploration ($, fast, focused)
 tree apps/api/internal -L 2          # Understand structure
 grep -r "authentication" apps/api/   # Find relevant files
 cat apps/api/internal/handlers/auth.go  # Read specific file
+
+# Even better: Use external memory
+echo "Auth uses JWT with 1h expiration" > .ai/notes/auth-findings.md
+# Later: cat .ai/notes/auth-findings.md (cheap, cached)
 ```
+
+**Auto-compact strategy**: When context reaches 95%, summarize trajectory and continue. Keep high-signal information, discard verbose details.
 
 ### Principle 2: Progressive Exploration (Just-In-Time Context)
 
@@ -79,6 +93,53 @@ Performance Principle:
 ```
 
 The heuristic gives AI the reasoning framework to apply to novel situations.
+
+### Principle 4: Minimal Tool Sets
+
+**Most common AI failure mode**: Bloated tool sets with overlapping or ambiguous functionality.
+
+**Golden rule**: If a human engineer can't definitively say which tool to use in a given situation, an AI agent can't be expected to do better.
+
+**Bad** (ambiguous tools):
+```typescript
+createUser()      // Creates user in database
+addUser()         // Also creates user?
+registerUser()    // Also creates user??
+insertUser()      // Wait, what's the difference?
+```
+
+AI thinks: "Which one? They all create users... I'll try createUser()... or maybe registerUser() sounds more right?"
+
+**Good** (clear, single-purpose):
+```typescript
+createUser()      // The only way to create a user
+updateUser()      // The only way to update
+deleteUser()      // The only way to delete
+```
+
+AI thinks: "Need to create user → createUser(). Done."
+
+**Apply this by**:
+- One tool per distinct operation
+- Different tools should have clearly different purposes
+- Tool names reveal intent (createUser vs getUserById - obviously different)
+- If tools overlap, merge them or make distinction crystal clear
+
+**Examples of good separation**:
+```typescript
+// Clear purposes
+fetchUserById(id)           # Get one user
+fetchUsersByRole(role)      # Get filtered list
+createUser(data)            # Create new
+updateUserEmail(id, email)  # Update specific field
+
+// Bad: Too similar
+getUser()         # Get how? By what?
+retrieveUser()    # Same as getUser?
+loadUser()        # Also same?
+```
+
+**For function design**: Strong type signatures help AI understand constraints and implement correctly. Tests serve as living documentation of expected behavior.
 
 ---
 
@@ -155,6 +216,42 @@ The heuristic gives AI the reasoning framework to apply to novel situations.
 - Business context (what, why, for whom)
 - Product goals and success metrics
 - Tech stack choices specific to this project
+
+**.claude.md** (optional):
+- Repository-specific rules and conventions
+- Automatically loaded into Claude Code's context on startup
+- Keep concise (50-100 lines max) and human-readable
+
+**When to create .claude.md**:
+- Project has unique conventions not covered in GUIDE.md
+- Specific tools/ORMs used (e.g., "Use Prisma, not raw SQL")
+- Non-obvious behaviors (e.g., "API always wraps responses in {data: ...}")
+- Setup requirements (e.g., "Run `npm run seed` before testing")
+
+**Example .claude.md**:
+```markdown
+# Project-Specific Rules
+
+## Database
+- Use Prisma ORM for all database operations
+- Never write raw SQL queries
+- Migrations in prisma/migrations/
+
+## API Responses
+- Always wrap in {data: ..., error: null} format
+- Use status codes: 200 (success), 400 (validation), 500 (server error)
+
+## Testing
+- Run `npm run seed` to populate test database
+- All tests must pass before committing
+- Mock external API calls
+
+## Forbidden
+- Never modify files in /generated folder (auto-generated)
+- Don't touch legacy/ folder (deprecated, will be removed)
+```
+
+**Why this works**: Claude Code automatically pulls .claude.md into context. No need to repeat these rules in every conversation.
 
 **.ai/tasks.md**:
 - Current task queue
