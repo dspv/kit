@@ -453,11 +453,11 @@ DevKit synthesizes best practices from leading AI development research and prove
 
 ## License
 
-**Open Source** (AGPL-3.0)
-Free to use, modify, distribute. Keep modifications open-source.
+Licensed under **CYBRIX Unified License (AGPL-3.0 + Commercial Terms)**
+See [LICENSE.md](./LICENSE.md) for full details.
 
-**Pro Features** (Commercial)
-GitHub Action, dashboard, analytics require paid license.
+**Open-Source Use**: Free under AGPL-3.0 - use, modify, distribute with source code disclosure.
+**Commercial Use**: Proprietary/SaaS without source disclosure - contact [legal@cybrix.cc](mailto:legal@cybrix.cc)
 
 ---
 
