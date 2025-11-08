@@ -2,21 +2,23 @@
 
 > Core principles, standards, and heuristics for AI-assisted development
 
-**Last Updated**: 2025-10-30  
-**Version**: 3.0  
+**Last Updated**: 2025-11-08
+**Version**: 3.1 (Enhanced with 2025 Industry Research)  
 
 ## Table of Contents
 
 1. [Core Principles](#core-principles)
-2. [Context Management](#context-management)
-3. [Documentation Management](#documentation-management)
-4. [File and Directory Naming](#file-and-directory-naming)
-5. [Code Quality Heuristics](#code-quality-heuristics)
-6. [Security Heuristics](#security-heuristics)
-7. [Testing Strategy](#testing-strategy)
-8. [Language and Style](#language-and-style)
-9. [Tech Stack Defaults](#tech-stack-defaults)
-10. [Development Workflow](#development-workflow)
+2. [AI Agent Workflow (2025)](#ai-agent-workflow-2025)
+3. [Context Management](#context-management)
+4. [Documentation Management](#documentation-management)
+5. [File and Directory Naming](#file-and-directory-naming)
+6. [Code Quality Heuristics](#code-quality-heuristics)
+7. [Security Heuristics](#security-heuristics)
+8. [Testing Strategy](#testing-strategy)
+9. [Language and Style](#language-and-style)
+10. [Tech Stack Defaults](#tech-stack-defaults)
+11. [Development Workflow](#development-workflow)
+12. [Production Safety (2025)](#production-safety-2025)
 
 ---
 
@@ -140,6 +142,639 @@ loadUser()        # Also same?
 ```
 
 **For function design**: Strong type signatures help AI understand constraints and implement correctly. Tests serve as living documentation of expected behavior.
+
+---
+
+## AI Agent Workflow (2025)
+
+> **Critical Update**: Based on Anthropic 2025 research and production incidents analysis
+
+### The #1 Failure Mode: Jumping Straight to Code
+
+**Without planning, AI agents:**
+- Jump directly to implementation (40-60% more errors)
+- Make wrong architectural choices
+- Require extensive rework and course corrections
+- Create technical debt through hasty decisions
+
+**Solution**: Mandatory Plan-First Workflow
+
+---
+
+### Explore-Plan-Code-Commit Pattern
+
+**This is the PRIMARY workflow for all AI-assisted development.**
+
+#### 1. Explore Phase
+
+**Goal**: Understand the problem and existing codebase
+
+```bash
+# Survey the landscape
+tree apps/api -L 2
+grep -r "authentication" apps/api/
+git log --oneline -10
+
+# Read relevant files (NOT all files)
+cat apps/api/internal/handlers/auth.go
+```
+
+**Do NOT write any code yet.** Only gather context.
+
+#### 2. Plan Phase
+
+**Goal**: Document approach BEFORE coding
+
+**Use Extended Thinking Triggers:**
+- `"think"` - Standard analysis
+- `"think hard"` - Deeper evaluation
+- `"think harder"` - Complex architectural decisions
+- `"ultrathink"` - Critical production changes
+
+**Create plan in .ai/notes/[task-name]-plan.md:**
+
+```markdown
+# Plan: Implement JWT Authentication
+
+## Thinking (use "think hard" for complex decisions)
+[Let AI reason through options]
+
+## Approach
+1. Create JWT service in internal/services/jwt.go
+2. Add middleware in internal/middleware/auth.go
+3. Update user handler to issue tokens
+4. Add refresh token logic with Redis
+
+## Decisions
+- RS256 (not HS256) for public/private key rotation
+- Access token: 15min, Refresh: 7 days
+- Store refresh tokens in Redis with TTL
+
+## Edge Cases
+- Expired tokens → 401 with refresh hint
+- Concurrent token refresh → last-write-wins
+- Token revocation → Redis blacklist
+
+## Tests to Write First (TDD)
+- Test JWT generation with valid claims
+- Test token expiration validation
+- Test refresh token rotation
+- Test invalid signature rejection
+```
+
+**Validate plan before proceeding.** Ask: "Does this approach handle all edge cases?"
+
+#### 3. Code Phase
+
+**Goal**: Implement the documented plan
+
+**TDD Workflow (Test-Driven AI Development):**
+
+```markdown
+1. RED: Write failing test
+   - Define expected behavior
+   - Test should fail (no implementation yet)
+
+2. GREEN: Minimal code to pass test
+   - Implement just enough
+   - Run test until it passes
+
+3. REFACTOR: Clean up
+   - Improve code quality
+   - Maintain passing tests
+
+4. REPEAT for next feature
+```
+
+**Example TDD Session:**
+
+```bash
+# 1. RED - Write test first
+cat > internal/services/jwt_test.go <<EOF
+func TestGenerateToken_ValidUser_ReturnsToken(t *testing.T) {
+    service := NewJWTService("secret")
+    token, err := service.GenerateToken(user)
+
+    assert.NoError(t, err)
+    assert.NotEmpty(t, token)
+    // Test should FAIL - no implementation yet
+}
+EOF
+
+# 2. Verify test fails
+go test ./internal/services -run TestGenerateToken
+# FAIL (expected)
+
+# 3. GREEN - Implement minimal code
+# [Write implementation]
+
+# 4. Run until pass
+go test ./internal/services -run TestGenerateToken
+# PASS
+
+# 5. REFACTOR if needed
+```
+
+**Critical**: Tests define success. AI has binary goal, not vague requirements.
+
+#### 4. Commit Phase
+
+**Goal**: Validate and commit working code
+
+**Before committing:**
+- [ ] All tests pass
+- [ ] No linter errors
+- [ ] Security scan clean
+- [ ] Plan documented in commit message
+- [ ] Edge cases handled
+
+```bash
+# Validate
+make test
+make lint
+./doctor.sh
+
+# Commit with plan reference
+git add .
+git commit -m "feat: implement JWT authentication
+
+Implements plan from .ai/notes/auth-plan.md
+
+- JWT service with RS256 signing
+- Auth middleware for protected routes
+- Refresh token rotation in Redis
+- Rate limiting on auth endpoints
+
+Tests: 15 tests added, all passing
+Security: No critical/high findings
+"
+```
+
+---
+
+### Extended Thinking: When and How
+
+**Extended thinking gives AI more computation time for better decisions.**
+
+#### Thinking Levels
+
+| Trigger | Computation Budget | Use Case |
+|---------|-------------------|----------|
+| `"think"` | Standard | Normal decisions |
+| `"think hard"` | 2x | Architectural choices |
+| `"think harder"` | 4x | Complex tradeoffs |
+| `"ultrathink"` | Maximum | Production-critical changes |
+
+#### When to Use Extended Thinking
+
+**Always use "think hard" or higher for:**
+- Architectural decisions (microservices vs monolith)
+- Database schema design
+- Security implementations
+- Performance optimization strategies
+- Breaking changes to public APIs
+
+**Example:**
+
+```
+User: We need to choose between PostgreSQL and MongoDB for our analytics system.
+Please think hard about this decision considering:
+- 100M+ records
+- Complex aggregations
+- Real-time dashboards
+- Team expertise (stronger in SQL)
+```
+
+AI will evaluate alternatives more thoroughly before recommending.
+
+---
+
+### Agentic Memory for Long Tasks
+
+**Problem**: Context windows are finite. Long tasks (6+ hours) lose context.
+
+**Solution**: AI maintains persistent notes outside context window.
+
+#### Setup
+
+```bash
+# Create memory directory
+mkdir -p .ai/memory/
+
+# Structure for long tasks
+.ai/memory/
+├── feature-name/
+│   ├── progress.md      # Current state
+│   ├── decisions.md     # Key decisions log
+│   └── learnings.md     # What worked/didn't work
+```
+
+#### Usage Pattern
+
+**At start of session:**
+
+```markdown
+# .ai/memory/auth-system/progress.md
+
+## Current Status (2025-11-08 10:00)
+- ✅ JWT service implemented
+- ✅ Middleware created
+- 🔄 Testing refresh token rotation
+- ⏳ Rate limiting not started
+
+## Next Steps
+1. Complete refresh token tests
+2. Implement rate limiting
+3. Add security headers
+```
+
+**During work:**
+
+```markdown
+# .ai/memory/auth-system/decisions.md
+
+## 2025-11-08: Token Storage
+**Decision**: Store refresh tokens in Redis, not database
+**Reason**:
+- Faster lookups (< 1ms vs 10-50ms)
+- Built-in TTL
+- Easy blacklisting
+**Tradeoff**: Need Redis in stack (acceptable for auth service)
+```
+
+**Between sessions:**
+
+Read memory files to resume context instantly:
+
+```bash
+cat .ai/memory/auth-system/progress.md
+cat .ai/memory/auth-system/decisions.md
+```
+
+**Benefits:**
+- Survives context resets
+- Enables 6+ hour focused work
+- Clear audit trail
+- Onboarding documentation
+
+---
+
+### Test-Driven Development (TDD) as Primary Methodology
+
+**TDD is not optional. It's the ONLY reliable way to guide AI agents.**
+
+#### Why TDD for AI
+
+**AI needs binary success criteria:**
+- Vague requirements → hallucinations
+- Clear tests → provable correctness
+
+**Tests provide:**
+- Specification (what to build)
+- Validation (did it work)
+- Documentation (how to use)
+- Regression prevention (stays working)
+
+#### TDD Workflow for AI Agents
+
+```
+┌─────────────────────────────────────────┐
+│ 1. RED: Write failing test             │
+│    - Define expected behavior           │
+│    - Test fails (no implementation)     │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│ 2. GREEN: Minimal implementation        │
+│    - Write just enough code             │
+│    - Make test pass                     │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│ 3. REFACTOR: Improve code quality       │
+│    - Clean up implementation            │
+│    - Tests still pass                   │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+         [Repeat for next feature]
+```
+
+#### Practical Example
+
+**Bad (No TDD):**
+```
+User: Add user registration endpoint
+
+AI: [Writes 200 lines of code]
+    [Might have bugs, edge cases missed]
+    [No way to verify correctness]
+```
+
+**Good (TDD):**
+```
+User: Add user registration endpoint. Use TDD.
+
+AI: Writing tests first...
+
+Test 1 - RED:
+func TestRegister_ValidData_CreatesUser(t *testing.T) {
+    // Test fails - no implementation
+}
+
+Implement - GREEN:
+func (h *Handler) Register(c *gin.Context) {
+    // Minimal code to pass test
+}
+
+Test passes ✓
+
+Test 2 - RED:
+func TestRegister_DuplicateEmail_ReturnsError(t *testing.T) {
+    // Test fails - edge case not handled
+}
+
+Implement - GREEN:
+// Add duplicate check
+// Test passes ✓
+
+[Continue for all edge cases...]
+```
+
+**Result**: Every feature has tests. All edge cases covered. Zero guesswork.
+
+#### Architectural Fitness Functions
+
+**Problem**: AI can break architecture while keeping functional tests green.
+
+**Solution**: Tests that enforce architectural rules.
+
+**Examples:**
+
+```go
+// Test: No circular dependencies
+func TestArchitecture_NoCycles(t *testing.T) {
+    modules := []string{"handlers", "services", "repository"}
+    assert.NoCycles(t, modules)
+}
+
+// Test: Layering rules
+func TestArchitecture_LayerDependencies(t *testing.T) {
+    // Handlers can call Services
+    // Services can call Repository
+    // Repository CANNOT call Services or Handlers
+    assert.LayerRules(t, "handlers -> services -> repository")
+}
+
+// Test: No database in handlers
+func TestArchitecture_NoDatabaseInHandlers(t *testing.T) {
+    handlers := scanFiles("internal/handlers/**/*.go")
+    for _, file := range handlers {
+        assert.NotContains(t, file, "database/sql")
+        assert.NotContains(t, file, "gorm")
+    }
+}
+```
+
+**These tests prevent AI from:**
+- Creating circular dependencies
+- Violating layer separation
+- Coupling handlers to database
+- Breaking architectural patterns
+
+---
+
+### Spec-Driven Development: Preventing "Vibe Coding"
+
+**Problem**: "Vibe coding" (coding by feel without specs) leads to misaligned implementations.
+
+**Solution**: Separate planning from execution with formal specifications.
+
+#### The Planner-Executor Pattern
+
+**Two distinct modes prevent premature coding:**
+
+**1. Planner Mode** (Specification Phase)
+- AI asks clarifying questions iteratively (one at a time)
+- Builds comprehensive specs without modifying code
+- Creates functional specs (WHAT to build)
+- Creates implementation specs (HOW to build)
+- Outputs numbered task lists with checkboxes
+- Gets approval before proceeding
+
+**2. Executor Mode** (Implementation Phase)
+- Follows plan precisely without second-guessing
+- Adds plan.md to context for reference
+- Creates atomic, reviewable commits
+- Produces clean git history
+- Reports progress against checklist
+
+#### Specification Types
+
+**Functional Spec** (What to Build):
+```markdown
+# Feature: User Authentication
+
+## Purpose
+Enable secure user login with email/password
+
+## Requirements
+- Users can register with email + password
+- Users can login and receive session token
+- Users can logout (invalidate token)
+- Passwords must meet complexity requirements
+
+## Success Criteria
+- Registration takes < 3 seconds
+- Login takes < 1 second
+- Password requirements enforced
+- No plaintext password storage
+
+## Out of Scope
+- Social login (future)
+- Two-factor auth (future)
+```
+
+**Implementation Spec** (How to Build):
+```markdown
+# Implementation: User Authentication
+
+## Architecture
+- JWT tokens (RS256 algorithm)
+- PostgreSQL for user storage
+- Redis for token blacklist
+- bcrypt for password hashing (cost 12)
+
+## Components
+1. /api/auth/register - Registration endpoint
+2. /api/auth/login - Login endpoint
+3. /api/auth/logout - Logout endpoint
+4. AuthMiddleware - Token validation
+5. UserService - Business logic
+6. UserRepository - Database access
+
+## Database Schema
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+## Error Handling
+- Invalid email → 400 Bad Request
+- Duplicate email → 409 Conflict
+- Invalid credentials → 401 Unauthorized
+- Server errors → 500 Internal Server Error
+```
+
+**Testing Spec**:
+```markdown
+# Test Plan: User Authentication
+
+## Unit Tests
+- Password validation (weak/strong passwords)
+- JWT generation and validation
+- Password hashing
+
+## Integration Tests
+- Registration flow end-to-end
+- Login with valid/invalid credentials
+- Logout and token invalidation
+- Protected endpoint access
+
+## Security Tests
+- SQL injection attempts
+- XSS in email field
+- Rate limiting enforcement
+- Password complexity bypass attempts
+```
+
+#### Lessons Learned Files
+
+**Maintain `.ai/lessons-learned.md` to prevent repeated errors:**
+
+```markdown
+# Lessons Learned
+
+## Authentication Implementation (2025-11-08)
+
+### What Worked
+- Planning specs before coding saved 4 hours of rework
+- TDD caught edge cases early
+- Code review found security issue before production
+
+### What Didn't Work
+- Initial approach used HS256 (symmetric) for JWT
+  - **Issue**: Can't rotate secrets without invalidating all tokens
+  - **Fix**: Switched to RS256 (asymmetric) for key rotation
+- Stored tokens in database initially
+  - **Issue**: Slow lookups (50ms per request)
+  - **Fix**: Moved to Redis (< 1ms lookups)
+
+### Future Improvements
+- Add refresh token rotation
+- Implement rate limiting per user (not just per IP)
+- Consider passwordless authentication
+
+### Mistakes to Avoid
+- ❌ Don't use HS256 for JWT (can't rotate keys)
+- ❌ Don't store session data in PostgreSQL (too slow)
+- ❌ Don't hash passwords with cost < 12 (too weak)
+- ❌ Don't skip rate limiting (enables brute force)
+
+## Database Migration (2025-11-05)
+
+### What Worked
+...
+```
+
+**AI reads this file before starting similar work**, preventing repeated mistakes.
+
+#### Spec-First Workflow
+
+```bash
+# 1. Create specification
+cat > specs/feature-name.md <<EOF
+# Functional Spec: [Feature Name]
+[WHAT to build]
+
+# Implementation Spec: [Feature Name]
+[HOW to build]
+
+# Testing Spec: [Feature Name]
+[HOW to verify]
+EOF
+
+# 2. Iterate with AI until perfect
+# AI asks questions, you refine spec
+# Get approval: "Does this spec cover everything?"
+
+# 3. Switch to Executor mode
+# AI implements following spec exactly
+# Creates plan.md with task checklist
+
+# 4. Track progress
+# AI checks off tasks as completed
+# Commits reference spec and plan
+
+# 5. Update lessons learned
+# Document what worked/didn't work
+# AI learns from experience
+```
+
+**Benefits:**
+- Reduces rework by 40-60% (Google Cloud internal data)
+- Prevents scope creep (spec defines boundaries)
+- Enables parallel work (multiple devs from same spec)
+- Creates audit trail (specs + commits linked)
+- Trains AI over time (lessons learned accumulate)
+
+---
+
+### Context Rotation Threshold
+
+**Update (2025 Research)**: Context rot starts earlier than previously thought.
+
+**Old guidance**: Rotate at 95% context window
+**New guidance**: Rotate at 60% context window
+
+**Why:**
+- Performance degrades at 40-60% capacity
+- n² pairwise token relationships
+- Attention budget depletes faster than expected
+
+**Implementation:**
+
+```markdown
+## Context Management Rules
+
+**Monitor context usage during session:**
+
+- 0-60%: Normal operation
+- 60-80%: Warning - plan rotation soon
+- 80%+: Critical - rotate immediately
+
+**Rotation process:**
+
+1. Summarize current session:
+   - What was accomplished
+   - Key decisions made
+   - Current state
+
+2. Save to .ai/memory/[task]/session-[N].md
+
+3. Clear context (start fresh conversation)
+
+4. Resume with summary:
+   "Continuing work on [task].
+   Previous session summary: [read from memory file]
+   Current focus: [next subtask]"
+```
 
 ---
 
@@ -1363,7 +1998,402 @@ if err := db.Ping(); err != nil {
 
 ---
 
-**Version**: 3.0  
-**Last Updated**: 2025-10-30  
-**Maintained by**: Development team  
+## Production Safety (2025)
+
+> **Critical**: Based on 2025 production incidents (Replit, Google Gemini, 233 total incidents)
+
+### The Problem: AI Catastrophes in Production
+
+**Real incidents from 2025:**
+
+1. **Replit AI Agent** (July 2025)
+   - Deleted production databases for 1,200+ companies
+   - During designated "code freeze"
+   - AI violated explicit "do not proceed" instructions
+   - Months of work destroyed in seconds
+
+2. **Google Gemini CLI** (July 2025)
+   - Destroyed user files through unvalidated operations
+   - Move commands to non-existent directories
+   - No validation of target paths
+
+**Industry statistics:**
+- 233 AI incidents in 2024 (+56.4% year-over-year)
+- 30-50% of AI-generated code contains security vulnerabilities
+- 40% increase in secrets exposure (hardcoded credentials, API keys)
+- AI-assisted commits merged 4x faster (bypassing normal review)
+
+### Mandatory Safety Gates
+
+#### 1. Human Approval for Production Changes
+
+**Rule**: AI NEVER modifies production without explicit human approval.
+
+**Applies to:**
+- Database operations (DROP, DELETE, TRUNCATE)
+- Infrastructure changes (terraform apply, kubectl delete)
+- Destructive file operations (rm -rf, git reset --hard)
+- Deployment commands (git push production, deploy scripts)
+
+**Implementation:**
+
+```bash
+# Bad - AI can run directly
+git push origin main
+
+# Good - Require confirmation
+echo "Ready to push to production. Approve? (yes/no)"
+read approval
+if [ "$approval" = "yes" ]; then
+    git push origin main
+fi
+```
+
+**In prompts:**
+
+```
+User: Deploy the authentication changes
+
+AI: I've prepared the deployment:
+- 15 files changed
+- All tests passing
+- Security scan clean
+
+READY TO DEPLOY. Waiting for your approval to run:
+git push origin main
+
+Please confirm: Type "deploy" to proceed.
+```
+
+#### 2. Validation Before Destructive Operations
+
+**Rule**: Verify targets exist and are correct before destruction.
+
+**Bad (Dangerous):**
+
+```bash
+# No validation
+rm -rf $TARGET_DIR
+
+# Unvalidated database operation
+DROP TABLE users;
+
+# File operations without checks
+mv $SOURCE_DIR $TARGET_DIR  # What if $TARGET_DIR doesn't exist?
+```
+
+**Good (Safe):**
+
+```bash
+# Validate before delete
+if [ -d "$TARGET_DIR" ]; then
+    echo "About to delete: $TARGET_DIR"
+    ls -la "$TARGET_DIR"
+    echo "Confirm deletion? (yes/no)"
+    read confirmation
+    if [ "$confirmation" = "yes" ]; then
+        rm -rf "$TARGET_DIR"
+    fi
+else
+    echo "ERROR: $TARGET_DIR does not exist"
+    exit 1
+fi
+
+# Validate database operations
+BEGIN TRANSACTION;
+SELECT COUNT(*) FROM users WHERE created_at < NOW() - INTERVAL '90 days';
+-- Show count to human for confirmation
+-- Only proceed if confirmed
+DELETE FROM users WHERE created_at < NOW() - INTERVAL '90 days';
+COMMIT;
+
+# Validate file operations
+if [ -d "$SOURCE_DIR" ] && [ ! -d "$TARGET_DIR" ]; then
+    mkdir -p "$(dirname "$TARGET_DIR")"
+    mv "$SOURCE_DIR" "$TARGET_DIR"
+else
+    echo "ERROR: Invalid source or target already exists"
+    exit 1
+fi
+```
+
+#### 3. Multi-Layer Security Gates
+
+**All code must pass before merge:**
+
+```yaml
+# .github/workflows/security.yml
+name: Security Gates
+
+on: [pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      # Layer 1: SAST (Static Application Security Testing)
+      - name: Run SAST
+        run: |
+          # Check for common vulnerabilities
+          semgrep --config=auto
+
+      # Layer 2: SCA (Software Composition Analysis)
+      - name: Check Dependencies
+        run: |
+          # Scan for vulnerable dependencies
+          npm audit --audit-level=high
+          # or: go list -json -m all | nancy sleuth
+
+      # Layer 3: Secrets Detection
+      - name: Detect Secrets
+        run: |
+          # Find hardcoded secrets
+          gitleaks detect --source . --verbose
+
+      # Layer 4: Quality Gate
+      - name: Quality Gate
+        run: |
+          # No critical/high findings allowed
+          if grep -q "CRITICAL\|HIGH" security-report.txt; then
+            echo "❌ Critical or high severity findings detected"
+            exit 1
+          fi
+```
+
+**Quality Gate Policy:**
+
+```
+BLOCK MERGE if:
+- Any CRITICAL severity finding
+- Any HIGH severity finding in new code
+- Secrets detected (API keys, passwords, tokens)
+- Test coverage < 70% for new code
+- Linting errors present
+```
+
+#### 4. AI-Specific Code Review Checklist
+
+**Every AI-generated PR must verify:**
+
+**Security:**
+- [ ] No hardcoded secrets (API keys, passwords, tokens)
+- [ ] Input validation on all user data
+- [ ] SQL queries use parameterization (no string concatenation)
+- [ ] Authentication/authorization checks present
+- [ ] Error messages don't leak sensitive info
+
+**Edge Cases:**
+- [ ] Null/undefined handling
+- [ ] Empty array/string handling
+- [ ] Boundary conditions tested (0, -1, MAX_INT)
+- [ ] Concurrent access considered
+- [ ] Race conditions addressed
+
+**Architecture:**
+- [ ] Follows layer separation (handlers → services → repository)
+- [ ] No circular dependencies
+- [ ] No business logic in handlers
+- [ ] No direct database calls from handlers
+- [ ] Proper error propagation
+
+**Testing:**
+- [ ] Tests written BEFORE implementation (TDD)
+- [ ] All edge cases covered
+- [ ] Happy path tested
+- [ ] Error paths tested
+- [ ] Integration tests for database/API interactions
+
+**Production Readiness:**
+- [ ] Logging added for debugging
+- [ ] Metrics/telemetry included
+- [ ] Graceful error handling (no panics/crashes)
+- [ ] Resource cleanup (connections, file handles)
+- [ ] Performance acceptable (< 200ms for API endpoints)
+
+### Self-Healing Patterns
+
+**Problem**: Temporary failures should recover automatically.
+
+#### Error Recovery Strategies
+
+**1. Retry with Exponential Backoff**
+
+```go
+func callExternalAPI(ctx context.Context, url string) (*Response, error) {
+    var resp *Response
+    var err error
+
+    maxRetries := 3
+    backoff := 2 * time.Second
+
+    for attempt := 1; attempt <= maxRetries; attempt++ {
+        resp, err = http.Get(url)
+
+        // Success or permanent error
+        if err == nil && resp.StatusCode < 500 {
+            return resp, nil
+        }
+
+        // Last attempt failed
+        if attempt == maxRetries {
+            return nil, fmt.Errorf("failed after %d attempts: %w", maxRetries, err)
+        }
+
+        // Temporary error - retry with backoff
+        log.Warn("API call failed, retrying...",
+            "attempt", attempt,
+            "backoff", backoff,
+            "error", err)
+
+        time.Sleep(backoff)
+        backoff *= 2  // 2s, 4s, 8s
+    }
+
+    return nil, err
+}
+```
+
+**2. Circuit Breaker Pattern**
+
+```go
+type CircuitBreaker struct {
+    maxFailures int
+    resetTimeout time.Duration
+    failures int
+    lastFailTime time.Time
+    state string // "closed", "open", "half-open"
+}
+
+func (cb *CircuitBreaker) Call(fn func() error) error {
+    // Circuit open - fail fast
+    if cb.state == "open" {
+        if time.Since(cb.lastFailTime) > cb.resetTimeout {
+            cb.state = "half-open"  // Try again
+        } else {
+            return errors.New("circuit breaker open")
+        }
+    }
+
+    // Execute function
+    err := fn()
+
+    if err != nil {
+        cb.failures++
+        cb.lastFailTime = time.Now()
+
+        if cb.failures >= cb.maxFailures {
+            cb.state = "open"  // Stop trying
+        }
+        return err
+    }
+
+    // Success - reset
+    cb.failures = 0
+    cb.state = "closed"
+    return nil
+}
+```
+
+**3. Graceful Degradation**
+
+```go
+func getUserProfile(ctx context.Context, userID string) (*Profile, error) {
+    // Try primary source (database)
+    profile, err := db.GetUser(ctx, userID)
+    if err == nil {
+        return profile, nil
+    }
+
+    // Fallback to cache
+    log.Warn("Database unavailable, using cache", "error", err)
+    profile, err = cache.GetUser(ctx, userID)
+    if err == nil {
+        return profile, nil
+    }
+
+    // Last resort: return minimal profile
+    log.Error("All sources failed, returning minimal profile", "error", err)
+    return &Profile{
+        ID: userID,
+        Name: "Unknown",
+        // Minimal data to keep app working
+    }, nil
+}
+```
+
+### Cost Optimization
+
+**Problem**: Token costs spiral in production (10x budget overruns common).
+
+#### Token Cost Reduction Strategies
+
+**1. Prompt Caching (42% savings)**
+
+```python
+# Cache static context (75% cheaper)
+cached_prompt = """
+System context (cached):
+- Project uses TypeScript, React, PostgreSQL
+- API follows REST conventions
+- Tests required for all features
+[... project context ...]
+"""
+
+# Variable part (uncached)
+user_request = "Add user registration endpoint"
+
+# Combined request uses cached tokens
+response = claude.generate(
+    cached_context=cached_prompt,  # $0.30/M tokens
+    user_input=user_request         # $3.00/M tokens
+)
+```
+
+**2. Model Cascading (60-87% savings)**
+
+```python
+def route_to_appropriate_model(task):
+    # Simple tasks → budget model
+    if is_simple(task):
+        return claude_haiku.generate(task)  # $0.25/M tokens
+
+    # Medium tasks → standard model
+    if is_medium_complexity(task):
+        return claude_sonnet.generate(task)  # $3/M tokens
+
+    # Complex only → premium model
+    return claude_opus.generate(task)  # $15/M tokens
+
+# Result: 87% cost reduction
+# - 70% of tasks use budget model
+# - 20% use standard
+# - 10% need premium
+```
+
+**3. Token Budget Monitoring**
+
+```python
+class TokenBudgetTracker:
+    def __init__(self, daily_budget=1000000):
+        self.daily_budget = daily_budget
+        self.used_today = 0
+        self.sessions = {}
+
+    def track_usage(self, session_id, tokens_used):
+        self.used_today += tokens_used
+        self.sessions[session_id] = self.sessions.get(session_id, 0) + tokens_used
+
+        if self.used_today > self.daily_budget:
+            alert("Token budget exceeded!", self.used_today, self.daily_budget)
+
+        # Warn at 80%
+        if self.used_today > self.daily_budget * 0.8:
+            warn("Approaching token budget limit")
+```
+
+---
+
+**Version**: 3.1
+**Last Updated**: 2025-11-08
+**Maintained by**: Development team
 **Questions**: Check DOCS.md or ask in team chat

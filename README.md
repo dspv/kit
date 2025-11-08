@@ -395,13 +395,16 @@ DevKit synthesizes best practices from leading AI development research and prove
 - Token budget optimization (cached vs uncached = 10x cost difference)
 - Progressive exploration (Just-In-Time context loading)
 - Minimal tool sets (avoid ambiguous function names)
-- Auto-compact strategy at 95% context window
+- Agentic memory for long tasks (6+ hours)
+- Context rotation at 60% (not 95% - updated 2025)
 
-**[Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)**
+**[Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)** (2025)
+- Plan-First Workflow (Explore-Plan-Code-Commit)
+- Extended thinking triggers ("think hard", "ultrathink")
+- Test-Driven AI Development (TDAID)
 - Repository-specific rules (.claude.md pattern)
 - File system as external memory
-- Strong type signatures for AI comprehension
-- Tests as living documentation
+- Human approval gates for production changes
 
 **[AGENTS.md Standard](https://www.infoq.com/news/2025/08/agents-md/)**
 - AI-specific documentation format
