@@ -50,7 +50,7 @@ Edit `.ai/context.md` with your product details, then `make dev`.
 
 ```bash
 # In your project directory:
-curl -sL https://github.com/dspv/devkit/archive/main.tar.gz | tar xz --strip=1
+curl -sL https://github.com/dspv/kit/archive/main.tar.gz | tar xz --strip=1
 ./doctor.sh                    # Check what needs fixing
 ```
 
@@ -93,7 +93,7 @@ Never manually update DevKit files again.
 
 **Pricing**: $9/month per repo (first 5 repos), then $29/month unlimited
 
-[Join waitlist for 50% off first 3 months →](https://github.com/dspv/kit/discussions)
+[Join waitlist for 50% off first 3 months →](../../discussions)
 
 ---
 
@@ -359,7 +359,7 @@ DevKit recommends (override in `.ai/context.md`):
 - [ ] VS Code extension
 - [ ] API for integrations
 
-[Vote on features →](https://github.com/dspv/kit/discussions)
+[Vote on features →](../../discussions)
 
 ---
 
@@ -440,13 +440,13 @@ DevKit synthesizes best practices from leading AI development research and prove
 
 ## Community
 
-- **GitHub Discussions** - [Ask questions, share projects](https://github.com/dspv/kit/discussions)
-- **Issues** - [Report bugs, request features](https://github.com/dspv/kit/issues)
+- **GitHub Discussions** - [Ask questions, share projects](../../discussions)
+- **Issues** - [Report bugs, request features](../../issues)
 - **Contributing** - [See CONTRIBUTING.md](CONTRIBUTING.md)
 
 **Show support**:
 ```markdown
-[![Built with DevKit](https://img.shields.io/badge/built%20with-DevKit-blue)](https://github.com/dspv/devkit)
+[![Built with DevKit](https://img.shields.io/badge/built%20with-DevKit-blue)](https://github.com/dspv/kit)
 ```
 
 ---
@@ -461,4 +461,4 @@ See [LICENSE.md](./LICENSE.md) for full details.
 
 ---
 
-**DevKit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/devkit)
+**DevKit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/kit)
