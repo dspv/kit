@@ -50,7 +50,7 @@ Edit `.ai/context.md` with your product details, then `make dev`.
 
 ```bash
 # In your project directory:
-curl -sL https://github.com/dspv/devkit/archive/main.tar.gz | tar xz --strip=1
+curl -sL https://github.com/dspv/kit/archive/main.tar.gz | tar xz --strip=1
 ./doctor.sh                    # Check what needs fixing
 ```
 
@@ -446,7 +446,7 @@ DevKit synthesizes best practices from leading AI development research and prove
 
 **Show support**:
 ```markdown
-[![Built with DevKit](https://img.shields.io/badge/built%20with-DevKit-blue)](https://github.com/dspv/devkit)
+[![Built with DevKit](https://img.shields.io/badge/built%20with-DevKit-blue)](https://github.com/dspv/kit)
 ```
 
 ---
@@ -461,4 +461,4 @@ See [LICENSE.md](./LICENSE.md) for full details.
 
 ---
 
-**DevKit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/devkit)
+**DevKit v3.0** | Built for AI-First Development | [Star on GitHub →](https://github.com/dspv/kit)
